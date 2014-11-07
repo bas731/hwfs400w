@@ -1,0 +1,77 @@
+I am running debian. So apt-get will appear in this document. Your mileage may vary.
+
+- get cheap wlan stick with n and WPA2 capability and linux support
+
+- get it to work (see random tutorial on web)
+	- you probably need firmwares (adjust /etc/apt/sources.lst to main non-free contrib):
+		> apt-get install firmware-linux firmware-linux-free firmware-linux-nonfree firmware-ralink 
+	- might also come in handy
+		> apt-get install ifupdown
+	- we need wpasupplicant
+		> apt-get install wpasupplicant  wireless-tools 
+
+- dhcp is necessary (unfortunately dhcping didn't work) but so if you don't have one:
+	> apt-get install dhclient
+	dhclient sucks, since options like -1 do not work, and interfaces in config files are added to command line supplied once, but it's what usually is installed.
+
+- /etc/dhcp/dhclient.conf should not have interface entries if you can avoid it (they will be renewed when our wlan connects, not really problem, just annoying)
+
+- if you have dhcp running with a router and you have no resolveconf package installed, you might want to protected /etc/resolv.conf
+	> chmod +i /etc/resolv.conf
+	if your dhcp client can be configured to not overwrite it, then you don't need it.
+	pump maybe?
+	if you have resolveconf installed then you can also configure it somehow.
+
+- we assume our wlan is wlan0
+
+- edit /etc/network/interfaces, add and edit the ssid to match your DIRECT-<6 digits>-<AirCopy|iScanAir|etc>
+auto wlan0
+allow-hotplug wlan0
+iface wlan0 inet static
+		address         192.168.18.1
+		network         192.168.18.0
+		netmask         255.255.255.0
+		broadcast       192.168.18.255
+		wpa-ssid        DIRECT-012345_AirCopy
+		wpa-psk         "12345678"
+
+- those static values are dummies, but dhcp will not be able to overwrite them, so they must match dhcp response (should, if no other client is connected to the scanner, sometimes 192.168.18.2 will appear, then we are in trouble)
+
+- protect it
+	> chmod 600 /etc/network/interfaces
+
+- now we need to start dhclient for wlan0 on connect and kill it on disconnect:
+
+- create file /etc/dhcp/dhclient.wpa_cli.sh
+#!/bin/bash
+PID=/var/run/dhclient.$1.pid
+LEASES=/var/lib/dhcp/dhclient.$1.leases
+logger -s -p local0.info -t dhclient.wpa_cli.sh $1 $2
+case "$1.$2" in
+	wlan0.CONNECTED )
+		if [ -f $PID  ]; then kill `cat $PID`; fi
+		rm $LEASES
+		dhclient -v -pf $PID -lf $LEASES $1
+		;;
+	wlan0.DISCONNECTED )
+		if [ -f $PID  ]; then kill `cat $PID`; fi
+		rm $LEASES
+		;;
+	* )
+		echo called with $1.$2
+		;;
+esac
+
+- make it executable?
+	> chmod 755 /etc/dhcp/dhclient.wpa_cli.sh
+	
+- edit your /etc/rc.local and add near the end before exit 0
+	wpa_cli -B -a /etc/dhcp/dhclient.wpa_cli.sh
+
+- now wpa_supplicant will start / kill dhclient for wlan0
+
+CAVEATS:
+- wpa_supplicant will exit if you ifdown wlan0. Don't down it. Or wrap the supplicant call into a loop.
+
+- you might want to install iptables and block any incomming traffic from wlan0 that is not a response to outgoing traffic.
+	this will block attacks with spoofed AP using SSID and well known 12345678 password!

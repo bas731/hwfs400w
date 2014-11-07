@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Content-Type"    content="text/html; charset=UTF-8">
+	<link href="../style/generic.css" rel="stylesheet" type="text/css" title="Plain">
+	<title>Mustek S400W iScan Air / ion Air Copy [+E-Post Edition] / Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー / HALO Wireless Portable Scanner</title>
+</head>
+<body>
+<h1 class="first"><a name="s1">1</a> Mustek S400W iScan Air</h1> 
+
+<p>The Mustek S400W iScan Air aka ion Air Copy [+E-Post Edition] aka Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー aka HALO Wireless Portable Scanner
+	is a simple document scanner for up to A4 wide documents (length might be a little longer).
+	Prices range from high (>100 €/$) to very low (30 € incl. VAT) in special sales - like the ion E-Post edition.
+</p>
+
+<p>It creates it's own WIFI network always named <code>DIRECT_&lt;mac&gt;-&lt;model&gt;</code> where &lt;mac&gt; are the last six digits
+	of the scanner's MAC address and the model is <i>AirCopy</i> or <i>iScanAir</i> etc.
+	The ip address is always <code>192.168.18.33</code> and the scanner service is listening on port <code>23</code>.
+	The scanner provides DHCP and allows clients that successfully aquired an IP via DHCP access to the scanning service.
+</p>
+
+<h2><a name="s1.1">1.1</a> The Plan</h2>
+
+<p>While it is well suited for what it is advertised for - easily scan a document on the go with your tablet or phone
+	(especially if you don't have some kind of 'camera scanner' software or the camera of your tablet / phone has
+	a too low resolution) - the low prices it is sold for warrant a much better usage model. (I did get one for my mom, though ;)
+</p>
+
+<p>If you speak german, you might want to read the following thread and especially the linked entries:</p>
+<ul>
+	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096">Thread</a></li>
+	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=1#post4342288">Killefitz Part 1 - Mac</a></li>
+	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=2#post4342432">Killefitz Part 2 - Screenshots</a></li>
+	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=2#post4343004">Killefitz Part 1 - Document scanning workflow</a></li>
+</ul>
+
+<p>The plan is to have it running connected to a server, where a service is running that will scan pages, OCR them,
+	pack a set of pages into a PDF and index the whole thing so a web interface can access this. Special keywords
+	with the index engine and you can easily have facets.
+</p>
+
+<p>Example: one comes home, opens his/her mail, sends all business mail through the scanner and is done with it.
+	Dream: scan ocr'ed data for dates and create reminders in google calendar or so.
+</p>
+
+<p>Another plan might be to have a universal (java?) GUI client with OCR and multi page PDFs.
+	Or SANE support. Or the well known cam scanner apps incorporate scanning from the scanner (since they already have OCR and PDFs).
+</p>
+
+
+<h2><a name="s1.2">1.2</a> Requirements</h2>
+
+<p>What is required for this:</p>
+
+<ol>
+	<li>Get the scanner into our network. On demand. So you can turn it on, scan, and turn it of.<br/>
+		Since the scanner is a WiFi AP, a WiFi dongle is required that will try to connect to the scanner.
+		The scanner connection should not disable normal network traffic, though.
+		I wrote a low level <a href="docs/wlan.linux.txt">preliminary guide for linux</a>. Network manangers should
+		make it easier. Windows should work, too (todo: metric).
+		No matter how, it's necessary to firewall the connection against incoming traffic due to the AP being easily spoofable.
+	</li>
+	
+	<li>Have a service running that connects to the scan service, looks if there is document inserted and scans it.
+		A complete list of commands and how to talk to the scanner is <a href="docs/commands.txt">available</a>.
+		I am writing a java / c command line client based on a library. Everything will be open source.
+		While a java GUI client is possible, it's not high on my list.
+	</li>
+	
+	<li>Check if the image is a special image that triggers a "delete last page", "document finished" event.
+		This can be done via special barcodes that might be laminated for durability.
+		Barcode libraries are available.
+	</li>
+	
+	<li>Improve image. Contrast. Rotation. While contrast is easily done, imagemagick and fix rotation scripts etc might come in handy.
+		The scanner has a not so nice auto crop function that will cut borders but is initialized on the first few lines of the image
+		so it usually cuts too much :(
+	</li>
+	
+	<li>OCR can be done with free cloud services or free programms like tesseract. Tesseract needs some ascii garbage filter, though ;)
+	</li>
+	
+	<li>PDF it. Libraries available</li>
+
+	<li>Index it. Lucene? Dunno yet.</li>
+	
+	<li>Web interface. Dunno yet.</li>
+	
+	<li>Feedback. How?
+		<ul>
+			<li>when connected, the LED color changes</li>
+			<li>signal commands</li>
+			<li>reconnect quickly to "blink"</li>
+			<li>on error: blink quickly until 'scanready'</li>
+			<li>on finished / remove last page: blink twice or three times</li>
+		</ul>
+	</li>
+</ol>
+
+	
+<h1 class="first"><a name="s2">2</a> Inside</h1> 
+<h2><a name="s2.1">2.1</a> Hardware</h2>
+<p>Manufacturer: Mustek, sold as:</p>
+<ul>
+	<li>Mustek iScan Air
+		<ul>
+			<li><a href="http://www.mustek.com.tw/S400W/S400W.html">http://www.mustek.com.tw/S400W/S400W.html">http://www.mustek.com.tw/S400W/S400W.html">http://www.mustek.com.tw/S400W/S400W.html</a></li>
+		</ul>
+	</li>
+	<li>ionaudio Air Copy
+		<ul>
+			<li><a href="http://www.ionaudio.com/products/details/air-copy">http://www.ionaudio.com/products/details/air-copy</a></li>
+			<li><a href="http://www.ionaudio.de/air-copy">http://www.ionaudio.de/air-copy</a></li>
+			<li><a href="http://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list">http://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list</a></li>
+		</ul>
+	</li>
+	<li>ionaudio Air Copy E-Post Edition
+		<ul>
+			<li><a href="http://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/">http://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/</a></li>
+			<li><a href="http://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn">http://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn</a></li>
+		</ul>
+	</li>
+	<li>Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー
+		<ul>
+			<li><a href="http://www.century.co.jp/products/pc/cat420/cps-a4wf.html">http://www.century.co.jp/products/pc/cat420/cps-a4wf.html</a></li>
+		</ul>
+	</li>
+	<li>HALO Wireless Portable Scanner for Photos and Documents
+		<ul><li><a href="http://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html">http://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html</a></li></ul>
+	</li>
+</ul>
+
+
+<h2><a name="s2.2">2.2</a> Pictures / Data</h2>
+
+<p>To open the scanner you need to remove 5 Phillips screws, 4 located beneath the rubber feet, and one beneath the white plug thing in the middle.
+	There is a 6th vicious tri-wing screw beneath the FCC label.
+	Note the smiley drawn with ballpoint pen on mine, some assembly worker knowing the casual hacker will have a nasty surprise here.
+	It's possible to remove it with a thin flat head screwdriver if you are careful.
+</p>
+
+<p>The scanner is powered by a Zoran Quatro 4310 chip that can run a custom zoran OS or Linux. The memory chip provides 64 MiB RAM.<p>
+
+<p>There is an unsoldered mini USB connector pad. I tried to connect it to a pc after soldering a cable there, didn't work.
+	No idea if this is a USB host or needs to be enabled via software. I have not yet tried the JTAG/serial pads either.
+</p>
+ 
+<p>The battery is fairly large, but not required for the scanner to work.
+	I have not determined yet if calibration settings persist without battery.
+</p>
+
+<p>It's also interesting to see that the power button is actually two buttons.</p>
+
+<ul>
+	<li><a href="http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275">http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275</a></li>
+	<li><a href="images/img_1290.jpg">Bottom</a></li>
+	<li><a href="images/img_1291.jpg">Inside</a></li>
+	<li><a href="images/img_1292.jpg">Inside Closeup</a></li>
+</ul>
+
+
+<h2><a name="s2.3">2.3</a> Software</h2>
+
+<p>The original software is very, very simple. You can't do more than take a scan and save it as jpeg or pdf or clean/calibrate the scanner.
+	No OCR, no multi page PDF. Mustek's software is multi language, 3rd party usually not.
+	Unfortunately, the windows version doesn't understand 3rd party hardware model codes.
+	iOS / Android apps do not check the model and work fine.
+</p>
+
+<dl>
+	<dt>Appstore: iOS, OS X, Androind, Win8, Win Phone 8</dt>
+	<dd>search for iscan air, air copy</dd>
+	<dt>Windows: <a href="http://www.mustek.com.tw/S400W/S400W.html">http://www.mustek.com.tw/S400W/S400W.html</a></dt>
+	<dd><a href="ftp://ftp.mustek.com.tw/pub/driver/iScanAir/">ftp://ftp.mustek.com.tw/pub/driver/iScanAir/</a></dd>
+	<dt>Windows: <a href="http://www.ionaudio.com/products/details/air-copy">http://www.ionaudio.com/products/details/air-copy</a></dt>
+	<dd><a href="http://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip">http://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip</a></dd>
+	<dt>Windows: <a href="http://www.century.co.jp/support/download/iscanair-win7vx.html">http://www.century.co.jp/support/download/iscanair-win7vx.html</a></dt>
+	<dd><a href="http://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe">http://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe</a></dd>
+</dl>
+
+
+
+<hr>
+	
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = "bastel";
+var disqus_identifier = "s400w.main";
+var disqus_url = "http://bastel.dyndns.info/~public/s400w/";
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript> 
+</body>
+</html>
