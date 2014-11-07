@@ -1,0 +1,8 @@
+user feedback
+-------------
+- when connected LED color changes
+- signal commands
+- reconnect quickly to "blink"
+- on error: blink quickly until scanready
+- on finished / remove last page: blink twice or three times
+

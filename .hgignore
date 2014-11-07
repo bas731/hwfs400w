@@ -1,0 +1,7 @@
+syntax: glob
+java/target/
+#java/.classpath
+#java/.project
+java/.settings/
+temp
+re

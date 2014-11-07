@@ -1,0 +1,36 @@
+Manufacturer: Mustek
+- Mustek iScan Air
+	- http://www.mustek.com.tw/S400W/S400W.html
+- ionaudio Air Copy
+	- http://www.ionaudio.com/products/details/air-copy
+	- http://www.ionaudio.de/air-copy
+	- http://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list
+- ionaudio Air Copy E-Post Edition
+	- http://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/?token=9eb659
+	- http://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn?
+- Century A4 Wi-Fi portable scanner transcription Pattori-kun (CPS-A4WF)
+	- http://www.century.co.jp/products/pc/cat420/cps-a4wf.html
+- HALO Wireless Portable Scanner for Photos and Documents
+	- http://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html
+
+
+Pictures / Data:
+	- http://fccid.net/number.php?fcc=HWFS400W&id=336275#axzz3FsovGEWa
+
+
+Software:
+- Appstore: iOS, OS X, Androind, Win8, Win Phone 8
+- Windows: http://www.mustek.com.tw/S400W/S400W.html
+	-> ftp://ftp.mustek.com.tw/pub/driver/iScanAir/
+- Windows: http://www.ionaudio.com/products/details/air-copy
+	-> http://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip
+- Windows: http://www.century.co.jp/support/download/iscanair-win7vx.html
+	-> http://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe
+
+
+
+
+
+
+
+(evtl. kompatibel mit Mustek H410W iScanAirGo: http://www.mustek.com.tw/H410W/iScanAirGo.html)

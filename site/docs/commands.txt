@@ -1,0 +1,178 @@
+TODO: max scan length inch: 17
+TODO: Can jpeg data be requested without size query?
+
+Legend:
+<byte>  : octet bits
+<number>: 4 byte, little endian
+<mac>   : 6 characters making up hexadecimal number
+<model> : 'AirCopy' | 'iScanAir' | ?
+
+
+--------------------------------------------------------------------------------------------------------
+Communications:
+- Optional: Check if your WIFI is connected to a SSID 'DIRECT-<mac>_<model>'
+- Optional: Check if <mac> matches MAC address of 192.168.33.18
+- Open TCP connection to 192.168.33.18:23
+- Close connection after finishing action: status, calibration, cleaning, scanning, dpi, unless chained
+	together (aka status + dpi + scan)
+- Socket timeout 60 seconds
+- A small delay is necessary after sending a command (200 - 500ms).
+- A small delay is necessary after reading a response(100 - 500ms) before issuing a new command.
+- Polling is not recommended, please use non blocking sockets and select.
+	For example if you start a scan, then issue get jpeg size, you will have to wait for
+	io on the socket for a while, until the scan finishes.
+
+
+--------------------------------------------------------------------------------------------------------
+Responses:
+Are usually less than 16 <byte>s (except preview and jpeg data), so a buffer of 16 bytes is enough.
+Known responses map to ascii strings for the first n <byte> followed by padding (which can be ignored):
+
+- devbusy
+	Device is busy. Generic, so abort action, or try again later (if you want to read status).
+	Shouldn't happen while you wait for a response, only if you are connecting to an already busy device.
+
+- battlow
+	Battery low. Not sure yet if only in idle, or as response on other requests.
+	
+- nopaper
+	Device idle. Nothing inserted, thus error for scan, calibrate, clean.
+
+- scanready
+	Paper sensor triggered. Ready to scan, calibrate or clean.
+
+- calgo
+	Device busy, calibration has started.
+
+- calibrate
+	Device busy, calibration finished.
+
+- cleango
+	Device busy, cleaning has started.
+
+- cleanend
+	Device busy, cleaning finished.
+
+- dpistd
+	DPI set to 300.
+
+- dpifine
+	DPI set to 600.
+	Note that dpi is reset to 300 after a successful scan!
+
+- scango
+	Device busy, scanning has started.
+
+Special responses:
+- previewend
+	Preview finished.
+	
+- jpegsize
+	Jpeg size aka jpeg available.
+
+
+--------------------------------------------------------------------------------------------------------
+Commands:
+Send as <number>s.
+Waiting after sending a command is recommended. Between 200 ms and 500 ms.
+Waiting some more after a function finished (cleaning, calibration, scanning) is recommended, too. 500 ms.
+
+20203030 get version
+		read: {1; 9} <byte>; known response = error
+		Example: IO0a.032
+		- ASCII string
+		- first 2 <byte> = manufacturer code, known: "NB" = Mustek and "IO" ion
+		- bytes after the '.' are a decimal number aka firmware version. Versions >=26 support 600 dpi.
+
+50006000 get status
+		wait 200ms
+		read: known response
+		- 'battlow'
+		- 'nopaper'
+		- 'devbusy'
+		- 'scanready'
+
+70708080 clean (requires status 'scanready')
+		wait 500ms
+		read: 'cleango'
+		wait 10s
+		read: 'cleanend'; bad: 'nopaper', 'devbusy', 'battlow'
+
+a000b000 calibrate (requires status 'scanready')
+		wait 500ms
+		read: 'calgo'
+		wait 10s
+		read: 'calibrate'; bad: 'nopaper', 'devbusy', 'battlow'
+
+10203040 set dpi 300
+		wait 200ms
+		read 'dpistd'
+
+50607080 set dpi 600
+		wait 200ms
+		read 'dpifine'
+
+10002000 start scan
+		wait 200ms
+		read 'scango'
+
+30304040 send preview data
+		wait 1s
+		read n * (640*3) <byte>
+		ends on 'previewend' <byte>
+		wait 1s
+
+c000d000 send jpeg size
+		wait 200ms
+		read 'jpegsize' <number>
+
+e000f000 send jpeg data
+		wait 500ms
+		read $jpegsize <byte>
+
+
+--------------------------------------------------------------------------------------------------------
+Example: How to get a 300 dpi scan
+- open socket
+- 50006000
+- if response not 'scanready', abort
+- 10002000
+- if response not 'scango', abort
+- c000d000
+- if response not 'jpegsize', abort
+- allocate file for given size
+- e000f000
+- read jpeg data
+
+
+
+00001010 ?
+10102020 ?
+40405050 ?
+50506060 ?
+60607070 ?
+80809090 ?
+9090a0a0 ?
+a0a0b0b0 ?
+b0b0c0c0 ?
+c0c0d0d0 ?
+d0d0e0e0 ?
+e0e0f0f0 ?
+
+00001000 ?
+20003000 ?
+30004000 ?
+40005000 ?
+60007000 ?
+70008000 ?
+80009000 ?
+9000a000 ?
+b000c000 ?
+d000e000 ?
+
+
+
+90a0b0c0 ?
+a0b0c0d0 ?
+b0c0d0e0 ?
+c0d0e0f0 ?
