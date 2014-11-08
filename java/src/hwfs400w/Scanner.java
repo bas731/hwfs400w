@@ -10,8 +10,6 @@ import hwfs400w.S400WConnection.Receiver;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -24,14 +22,6 @@ import java.util.logging.Logger;
  */
 public class Scanner
 {
-	final static int FW300 = 25; // Last version not support DPI setting.
-	
-	int scan(OutputStream so, InputStream si, int dpi, String out)
-	{
-		return 0;
-	}
-	
-	
 	public static void main(final String[] args) throws InterruptedException, IOException
 	{
 		Handler h = new ConsoleHandler();
