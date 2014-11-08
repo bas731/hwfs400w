@@ -1,3 +1,6 @@
+
+known bug: page feed on shutdown is letter sized, not a4...
+
 Manufacturer: Mustek
 - Mustek iScan Air
 	- http://www.mustek.com.tw/S400W/S400W.html
