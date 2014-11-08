@@ -95,13 +95,13 @@ Waiting some more after a function finished (cleaning, calibration, scanning) is
 70708080 clean (requires status 'scanready')
 		wait 500ms
 		read: 'cleango'
-		wait 10s
+		wait ~15s
 		read: 'cleanend'; bad: 'nopaper', 'devbusy', 'battlow'
 
 a000b000 calibrate (requires status 'scanready')
 		wait 500ms
 		read: 'calgo'
-		wait 10s
+		wait ~40s
 		read: 'calibrate'; bad: 'nopaper', 'devbusy', 'battlow'
 
 10203040 set dpi 300
@@ -124,6 +124,7 @@ a000b000 calibrate (requires status 'scanready')
 
 c000d000 send jpeg size
 		wait 200ms
+		wait if no preview: ~10s for 300 DPI, ~35s for 600dpi (A4)
 		read 'jpegsize' <number>
 
 e000f000 send jpeg data
