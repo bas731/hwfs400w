@@ -90,13 +90,13 @@ Als <number>s senden.
 70708080 clean (benötigt Status 'scanready')
 		warte 500ms
 		lese: 'cleango'
-		warte >=10s
+		warte ~15s
 		lese: 'cleanend'; schlecht: 'nopaper', 'devbusy', 'battlow'
 
 a000b000 calibrate (benötigt Status 'scanready')
 		warte 500ms
 		lese: 'calgo'
-		warte >=10s
+		warte ~40s
 		lese: 'calibrate'; schlecht: 'nopaper', 'devbusy', 'battlow'
 
 10203040 set dpi 300
@@ -123,6 +123,8 @@ c000d000 send jpeg size
 
 e000f000 send jpeg data
 		warte 500ms
+		warte, wenn kein Preview: ~10s für 300 DPI, ~35s für 600dpi (A4)
+		
 		lese: $jpegsize <byte>
 
 
