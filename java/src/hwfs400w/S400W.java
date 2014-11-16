@@ -35,9 +35,13 @@ import java.util.logging.Logger;
  * 
  * @author bastel
  */
-public class S400WConnection
+public class S400W
 {
-	private final static Logger log = Logger.getLogger(S400WConnection.class.getName());
+	private final static Logger log = Logger.getLogger(S400W.class.getName());
+	
+	
+	/** Version */
+	public final static String VERSION = "20141116";
 	
 	
 	/**
@@ -49,10 +53,10 @@ public class S400WConnection
 		 * Notifies clients of preview data, end of preview data, jpeg size, jpeg data, and end of jpeg data.<br>
 		 * Note: EOF for jpeg is guaranteed to be called if jpeg size has been given (as to close file handles etc).
 		 * 
-		 * @param data either an array of bytes with preview or jpeg data, {@link S400WConnection#EOF}
-		 * 		if end of preview/jpeg data, or {@link S400WConnection#JPEG_SIZE} for jpeg size.
+		 * @param data either an array of bytes with preview or jpeg data, {@link S400W#EOF}
+		 * 		if end of preview/jpeg data, or {@link S400W#JPEG_SIZE} for jpeg size.
 		 * @param offset the offset inside the given array if not EOF or size.
-		 * @param length number of bytes to read from data or jpeg size of data is {@link S400WConnection#JPEG_SIZE}.
+		 * @param length number of bytes to read from data or jpeg size of data is {@link S400W#JPEG_SIZE}.
 		 * @return <code>false</code> to abort receiving (not supported yet), <code>true</code> otherwise.
 		 * @throws IOException If something goes wrong while processing the data.
 		 */
@@ -61,7 +65,7 @@ public class S400WConnection
 	
 	
 	/** Prefix for properties, usually &lt;package-name&gt;.&lt;class-name&gt; of this class. */ 
-	public final static String PROPERTY_KEY = S400WConnection.class.getName();
+	public final static String PROPERTY_KEY = S400W.class.getName();
 	
 	/** Firmware version necessary to set (higher) resolution. */
 	public final static int MIN_SET_RESOLUTION_FW = 26;
@@ -158,7 +162,7 @@ public class S400WConnection
 	 * and <code>{@link #PROPERTY_KEY}.target.port</code>.
 	 * Default values are <i>192.168.18.33</i> and <i>23</i>.
 	 */
-	public S400WConnection()
+	public S400W()
 	{
 		this(System.getProperty(PROPERTY_KEY + ".target.host", "192.168.18.33"),
 			Integer.getInteger (PROPERTY_KEY + ".target.port", 23));
@@ -168,7 +172,7 @@ public class S400WConnection
 	/**
 	 * Creates a new S400W connection to the given host and port.
 	 */
-	public S400WConnection(String host, int port)
+	public S400W(String host, int port)
 	{
 		_targetHost = host;
 		_targetPort = port;
