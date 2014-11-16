@@ -7,12 +7,16 @@
 	<title>Mustek S400W iScan Air / ion Air Copy [+E-Post Edition] / Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー / HALO Wireless Portable Scanner</title>
 </head>
 <body>
-<h1 class="first"><a name="s1">1</a> Mustek S400W iScan Air</h1> 
+<p>Last Update: 2014-11-16: reworked the docs, updated assets</p>
+
+<h1 class="first">Mustek S400W iScan Air</h1> 
 
 <p>The Mustek S400W iScan Air aka ion Air Copy [+E-Post Edition] aka Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー aka HALO Wireless Portable Scanner
 	is a simple document scanner for up to A4 wide documents (length might be a little longer).
 	Prices range from high (>100 €/$) to very low (30 € incl. VAT) in special sales - like the ion E-Post edition.
 </p>
+
+<p>Its predecessor is the Mustek S400 iScan docking station for iPads.</p>
 
 <p>It creates it's own WIFI network always named <code>DIRECT_&lt;mac&gt;-&lt;model&gt;</code> where &lt;mac&gt; are the last six digits
 	of the scanner's MAC address and the model is <i>AirCopy</i> or <i>iScanAir</i> etc.
@@ -20,87 +24,15 @@
 	The scanner provides DHCP and allows clients that successfully aquired an IP via DHCP access to the scanning service.
 </p>
 
-<h2><a name="s1.1">1.1</a> The Plan</h2>
-
 <p>While it is well suited for what it is advertised for - easily scan a document on the go with your tablet or phone
 	(especially if you don't have some kind of 'camera scanner' software or the camera of your tablet / phone has
 	a too low resolution) - the low prices it is sold for warrant a much better usage model. (I did get one for my mom, though ;)
+	<a href="docflow.html">Connect it to a server and automatically scan, ocr, pdf, and index documents.</a>
 </p>
 
-<p>If you speak german, you might want to read the following thread and especially the linked entries:</p>
-<ul>
-	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096">Thread</a></li>
-	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=1#post4342288">Killefitz Part 1 - Mac</a></li>
-	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=2#post4342432">Killefitz Part 2 - Screenshots</a></li>
-	<li><a href="http://hukd.mydealz.de/deals/ion-air-copy-e-post-edition-scanner-24-95-bei-conrad-versandkostenfrei-396096?page=2#post4343004">Killefitz Part 1 - Document scanning workflow</a></li>
-</ul>
+<h1><a name="s1">1</a> The Scanner</h1> 
 
-<p>The plan is to have it running connected to a server, where a service is running that will scan pages, OCR them,
-	pack a set of pages into a PDF and index the whole thing so a web interface can access this. Special keywords
-	with the index engine and you can easily have facets.
-</p>
-
-<p>Example: one comes home, opens his/her mail, sends all business mail through the scanner and is done with it.
-	Dream: scan ocr'ed data for dates and create reminders in google calendar or so.
-</p>
-
-<p>Another plan might be to have a universal (java?) GUI client with OCR and multi page PDFs.
-	Or SANE support. Or the well known cam scanner apps incorporate scanning from the scanner (since they already have OCR and PDFs).
-</p>
-
-
-<h2><a name="s1.2">1.2</a> Requirements</h2>
-
-<p>What is required for this:</p>
-
-<ol>
-	<li>Get the scanner into our network. On demand. So you can turn it on, scan, and turn it of.<br/>
-		Since the scanner is a WiFi AP, a WiFi dongle is required that will try to connect to the scanner.
-		The scanner connection should not disable normal network traffic, though.
-		I wrote a low level <a href="docs/wlan.linux.txt">preliminary guide for linux</a>. Network manangers should
-		make it easier. Windows should work, too (todo: metric).
-		No matter how, it's necessary to firewall the connection against incoming traffic due to the AP being easily spoofable.
-	</li>
-	
-	<li>Have a service running that connects to the scan service, looks if there is document inserted and scans it.
-		A complete list of commands and how to talk to the scanner is <a href="docs/commands.txt">available</a>.
-		I am writing a java / c command line client based on a library. Everything will be open source.
-		While a java GUI client is possible, it's not high on my list.
-	</li>
-	
-	<li>Check if the image is a special image that triggers a "delete last page", "document finished" event.
-		This can be done via special barcodes that might be laminated for durability.
-		Barcode libraries are available.
-	</li>
-	
-	<li>Improve image. Contrast. Rotation. While contrast is easily done, imagemagick and fix rotation scripts etc might come in handy.
-		The scanner has a not so nice auto crop function that will cut borders but is initialized on the first few lines of the image
-		so it usually cuts too much :(
-	</li>
-	
-	<li>OCR can be done with free cloud services or free programms like tesseract. Tesseract needs some ascii garbage filter, though ;)
-	</li>
-	
-	<li>PDF it. Libraries available</li>
-
-	<li>Index it. Lucene? Dunno yet.</li>
-	
-	<li>Web interface. Dunno yet.</li>
-	
-	<li>Feedback. How?
-		<ul>
-			<li>when connected, the LED color changes</li>
-			<li>signal commands</li>
-			<li>reconnect quickly to "blink"</li>
-			<li>on error: blink quickly until 'scanready'</li>
-			<li>on finished / remove last page: blink twice or three times</li>
-		</ul>
-	</li>
-</ol>
-
-	
-<h1 class="first"><a name="s2">2</a> Inside</h1> 
-<h2><a name="s2.1">2.1</a> Hardware</h2>
+<h2><a name="s1.1">1.1</a> Hardware</h2>
 <p>Manufacturer: Mustek, sold as:</p>
 <ul>
 	<li>Mustek iScan Air
@@ -117,7 +49,7 @@
 	</li>
 	<li>ionaudio Air Copy E-Post Edition
 		<ul>
-			<li><a href="http://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/">http://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/</a></li>
+			<li><a href="http://www.meinpaket.de/de/air-copy-e-post-edition/p<code>49978245</code>9/">http://www.meinpaket.de/de/air-copy-e-post-edition/p<code>49978245</code>9/</a></li>
 			<li><a href="http://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn">http://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn</a></li>
 		</ul>
 	</li>
@@ -132,7 +64,7 @@
 </ul>
 
 
-<h2><a name="s2.2">2.2</a> Pictures / Data</h2>
+<h2><a name="s1.2">1.2</a> Pictures / Data</h2>
 
 <p>To open the scanner you need to remove 5 Phillips screws, 4 located beneath the rubber feet, and one beneath the white plug thing in the middle.
 	There is a 6th vicious tri-wing screw beneath the FCC label.
@@ -160,7 +92,7 @@
 </ul>
 
 
-<h2><a name="s2.3">2.3</a> Software</h2>
+<h2><a name="s1.3">1.3</a> Software</h2>
 
 <p>The original software is very, very simple. You can't do more than take a scan and save it as jpeg or pdf or clean/calibrate the scanner.
 	No OCR, no multi page PDF. Mustek's software is multi language, 3rd party usually not.
@@ -180,9 +112,192 @@
 </dl>
 
 
+<h1><a name="s2">2</a> Custom Access</h2>
 
-<hr>
+<h2><a name="s2.1">2.1</a> Download</h2>
+
+<p>I am providing free source code:</p>
+<ul>
+	<li>a sleek <a href="code/S400W.java">java library</a> supporting everything</li>
+	<li>a simple java <a href="code/Scanner.java">command line scanner</a> for demonstration purposes</li>
+</ul>
+
+<h2><a name="s2.3">2.3</a> Specification</h2>
+
+<p>Download specification in <a href="docs/commands.txt">english</a> or <a href="kommandos.txt">german</a>.</p>
+
+<h3><a name="s2.3.1">2.3.1</a> Communication</h3>
+
+<ul>
+<li>Optional: Check if your WIFI is connected to a SSID 'DIRECT-<mac>_<model>'
+<li>Optional: Check if <mac> matches MAC address of 192.168.33.18
+<li>Open TCP connection to 192.168.33.18:23
+<li>Close connection after finishing action: status, calibration, cleaning, scanning, resolution, unless chained together (aka status + resolution + scan)
+<li>Socket timeout 60 seconds
+<li>A small delay is necessary after sending a command (200 - 500ms).
+<li>A small delay is necessary after reading a response(100 - 500ms) before issuing a new command.
+<li>Polling is not recommended, please use non blocking sockets and select.
+	For example if you start a scan, then issue get jpeg size, you will have to wait for
+	io on the socket for a while, until the scan finishes.
+</ul>
+
+
+<h3><a name="s2.3.2">2.3.2</a> Legend</h3>
+<dl>
+<dt>&lt;byte&gt;</dt><dd>octet bits</dd>
+<dt>&lt;number&gt;</dt><dd>4 byte, little endian</dd>
+<dt>&lt;mac&gt;</dt><dd>6 characters making up hexadecimal number</dd>
+<dt>&lt;model&gt;</dt><dd>'AirCopy' | 'iScanAir' | ?</dd>
+</dl>
+
+
+<h3><a name="s2.3.3">2.3.3</a> Responses</h3>
+
+<p>
+Are usually less than 16 &lt;byte&gt;s (except preview and jpeg data), so a buffer of 16 bytes is enough.
+Known responses map to ascii strings for the first n &lt;byte&gt; followed by padding (which can be ignored):
+</p>
+
+<dl>
+<dt><code>devbusy</code></dt>
+<dd>Device is busy. Generic, so abort action, or try again later (if you want to read status).
+	Shouldn't happen while you wait for a response, only if you are connecting to an already busy device.</dd>
+
+<dt><code>battlow</code></dt>
+<dd>Battery low. Not sure yet if only in idle, or as response on other requests.</dd>
 	
+<dt><code>nopaper</code></dt>
+<dd>Device idle. Nothing inserted, thus error for scan, calibrate, clean.</dd>
+
+<dt><code>scanready</code></dt>
+<dd>Paper sensor triggered. Ready to scan, calibrate or clean.</dd>
+
+<dt><code>calgo</code></dt>
+<dd>Device busy, calibration has started.</dd>
+
+<dt><code>calibrate</code></dt>
+<dd>Device busy, calibration finished.</dd>
+
+<dt><code>cleango</code></dt>
+<dd>Device busy, cleaning has started.</dd>
+
+<dt><code>cleanend</code></dt>
+<dd>Device busy, cleaning finished.</dd>
+
+<dt><code>dpistd</code></dt>
+<dd>Resolution set to 300 DPI.</dd>
+
+<dt><code>dpifine</code></dt>
+<dd>Resolution set to 600 DPI.<br> Note that resolution is reset to 300 DPI after a successful scan!</dd>
+
+<dt><code>scango</code></dt>
+<dd>Device busy, scanning has started.</dd>
+</dl>
+
+<p>Special responses:</p>
+<dl>
+<dt><code>previewend</code></dt>
+<dd>Preview finished.</dd>
+	
+<dt><code>jpegsize</code></dt>
+<dd>Jpeg size aka jpeg available.</dd>
+</dl>
+
+
+<h3><a name="s2.3.4">2.3.4</a> Commands</h3>
+
+<p>Send as &lt;number&gt;s.
+Waiting after sending a command is recommended. Between 200 ms and 500 ms.
+Waiting some more after a function finished (cleaning, calibration, scanning) is recommended, too. 500 ms.
+</p>
+
+<dl>
+<dt><code>20203030</code>: get version</dt>
+<dd>read: {1; 9} &lt;byte&gt;; known response = error<br>
+Example: IO0a.032
+<ul class="compact">
+<li>ASCII string</li>
+<li>first 2 &lt;byte&gt; = manufacturer code, known: "NB" = Mustek and "IO" ion</li>
+<li>bytes after the '.' are a decimal number aka firmware version. Versions &gt;=26 support 600 DPI.</li>
+</ul>
+
+<dt><code>50006000</code>: get status</dt>
+<dd>wait 200ms<br>
+read: known response
+<ul class="compact">
+<li>'battlow'</li>
+<li>'nopaper'</li>
+<li>'devbusy'</li>
+<li>'scanready'</li>
+</ul>
+</dd>
+
+<dt><code>70708080</code>: clean (requires status 'scanready')</dt>
+<dd>wait 500ms<br>
+read 'cleango'<br>
+wait 10s<br>
+read 'cleanend'; bad: 'nopaper', 'devbusy', 'battlow'
+</dd>
+
+<dt><code>a000b000</code>: calibrate (requires status 'scanready')</dt>
+<dd>wait 500ms<br>
+read 'calgo'<br>
+wait 10s<br>
+read 'calibrate'; bad: 'nopaper', 'devbusy', 'battlow'
+</dd>
+
+<dt><code>10203040</code>: set DPI 300</dt>
+<dd>wait 200ms<br>
+read 'dpistd'
+</dd>
+
+<dt><code>50607080</code>: set DPI 600</dt>
+<dd>wait 200ms<br>
+read 'dpifine'
+</dd>
+
+<dt><code>10002000</code>: start scan</dt>
+<dd>wait 200ms<br>
+read 'scango'
+</dd>
+
+<dt><code>30304040</code>: send preview data</dt>
+<dd>wait 1s<br>
+read n * 1920 &lt;byte&gt; (640 pixel per line, 3 &lt;byte&gt; per pixel: RGB)
+ends on 'previewend' &lt;byte&gt;<br>
+wait 1s
+</dd>
+
+<dt><code>c000d000</code>: send jpeg size</dt>
+<dd>wait 200ms<br>
+read 'jpegsize' &lt;number&gt;
+</dd>
+
+<dt><code>e000f000</code>: send jpeg data</dt>
+<dd>wait 500ms<br>
+read $jpegsize &lt;byte&gt;
+</dd>
+</dl>
+
+
+<h3><a name="s2.3.5">2.3.5</a> Example</h3>
+
+<p>How to get a 300 DPI scan:</p>
+<ol>
+<li>open socket</li>
+<li><code>50006000</code></li>
+<li>if response not 'scanready', abort</li>
+<li><code>10002000</code></li>
+<li>if response not 'scango', abort</li>
+<li><code>c000d000</code></li>
+<li>if response not 'jpegsize', abort</li>
+<li>allocate file for given size</li>
+<li><code>e000f000</code></li>
+<li>read jpeg data</li>
+</ol>
+
+
+<h1><a name="feedback"></a> Feedback</h2>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
 var disqus_shortname = "bastel";
