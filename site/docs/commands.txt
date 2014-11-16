@@ -118,7 +118,7 @@ a000b000 calibrate (requires status 'scanready')
 
 30304040 send preview data
 		wait 1s
-		read n * (640*3) <byte>
+		read n * 1920 <byte> (640 pixel per line, 3 <byte> per pixel: RGB)
 		ends on 'previewend' <byte>
 		wait 1s
 

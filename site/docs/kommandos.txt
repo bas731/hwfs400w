@@ -113,7 +113,7 @@ a000b000 calibrate (benötigt Status 'scanready')
 
 30304040 send preview data
 		warte 1s
-		lese: n * (640*3) <byte>
+		lese: n * 1920 <byte> (640 Pixel pro Zeile, 3 <byte> pro Pixel: RGB)
 		endet auf 'previewend' <byte>
 		warte 1s
 
