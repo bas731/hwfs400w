@@ -1,7 +1,6 @@
-/* Copyright (c) 2014 bastel
+/* This file is licensed under CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).  
  *
- * file - created: 12.10.2014 by bastel
- *        id:      $Id$
+ * Created 2014-10-12 by bastel.
  */
 
 package hwfs400w;

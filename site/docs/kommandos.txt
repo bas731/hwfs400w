@@ -1,3 +1,6 @@
+Rechtlicher Hinweis: Diese Datei ist unter der Creative-Commons-Lizenz CC-CC0 1.0 lizensiert (http://creativecommons.org/publicdomain/zero/1.0/).
+--------------------------------------------------------------------------------------------------------
+
 Legende:
 <byte>  : 8 Bits
 <number>: 4 Byte, little endian
