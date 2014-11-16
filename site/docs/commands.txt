@@ -13,8 +13,8 @@ Communications:
 - Optional: Check if your WIFI is connected to a SSID 'DIRECT-<mac>_<model>'
 - Optional: Check if <mac> matches MAC address of 192.168.33.18
 - Open TCP connection to 192.168.33.18:23
-- Close connection after finishing action: status, calibration, cleaning, scanning, dpi, unless chained
-	together (aka status + dpi + scan)
+- Close connection after finishing action: status, calibration, cleaning, scanning, resolution, unless chained
+	together (aka status + resolution + scan)
 - Socket timeout 60 seconds
 - A small delay is necessary after sending a command (200 - 500ms).
 - A small delay is necessary after reading a response(100 - 500ms) before issuing a new command.
@@ -54,11 +54,11 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 	Device busy, cleaning finished.
 
 - dpistd
-	DPI set to 300.
+	Resolution set to 300 DPI.
 
 - dpifine
-	DPI set to 600.
-	Note that dpi is reset to 300 after a successful scan!
+	Resolution set to 600 DPI.
+	Note that resolution is reset to 300 DPI after a successful scan!
 
 - scango
 	Device busy, scanning has started.
@@ -124,7 +124,7 @@ a000b000 calibrate (requires status 'scanready')
 
 c000d000 send jpeg size
 		wait 200ms
-		wait if no preview: ~10s for 300 DPI, ~35s for 600dpi (A4)
+		wait if no preview: ~10s for 300 DPI, ~35s for 600 DPI (A4)
 		read 'jpegsize' <number>
 
 e000f000 send jpeg data
@@ -133,7 +133,7 @@ e000f000 send jpeg data
 
 
 --------------------------------------------------------------------------------------------------------
-Example: How to get a 300 dpi scan
+Example: How to get a 300 DPI scan
 - open socket
 - 50006000
 - if response not 'scanready', abort

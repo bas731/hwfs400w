@@ -10,8 +10,8 @@ Kommunikation:
 - Optional: Überprüfen, ob WIFI zur SSID 'DIRECT-<mac>_<model>' verbunden ist.
 - Optional: Überprüfen, ob <mac> zur MAC Adresse von 192.168.33.18 passt.
 - TCP Verbindung zu 192.168.33.18:23 öffnen
-- Verbindung nach Abschließen der Aktion schließen: status, calibration, cleaning, scanning, dpi.
-	Außer man hängt mehrere Aktionen zusammen (status + dpi + scan)
+- Verbindung nach Abschließen der Aktion schließen: status, calibration, cleaning, scanning, auflösung.
+	Außer man hängt mehrere Aktionen zusammen (status + auflösung + scan)
 - Socket timeout 60 Sekunden
 - Eine kleine Verzögerung ist nach dem Senden eines Kommandos nötig (200 - 500ms).
 - Eine kleine Verzögerung ist nach dem Lesen einer Antwort nötig (100 - 500ms), bevor man eine neues Kommando senden kann.
@@ -51,11 +51,11 @@ Bekannte Antworten lassen sich auf ASCII Strings für die ersten <bytes> mappen, 
 	Gerät busy?, Reinigung beendet.
 
 - dpistd
-	DPI auf 300 gesetzt.
+	Auflösung auf 300 DPI gesetzt.
 
 - dpifine
-	DPI auf 600 gesetzt.
-	(Wird nach erfolgreichem Scan wieder auf 300 gesetzt).
+	Auflösung auf 600 DPI gesetzt.
+	(Wird nach erfolgreichem Scan wieder auf 300 DPI gesetzt).
 
 - scango
 	Gerät busy, Scannen gestartet.
@@ -77,7 +77,7 @@ Als <number>s senden.
 		Beispiel: IO0a.032
 		- ASCII string
 		- ersten 2 <byte> = Manufacturer Code, bekannt: "NB" = Mustek, "IO" ion
-		- <byte>s nach dem '.' sind eine Dezimalzahl = Firmware Version, hier 32. Versionen >=26 unterstützen 600 dpi.
+		- <byte>s nach dem '.' sind eine Dezimalzahl = Firmware Version, hier 32. Versionen >=26 unterstützen 600 DPI.
 
 50006000 get status
 		warte 200ms
@@ -123,13 +123,13 @@ c000d000 send jpeg size
 
 e000f000 send jpeg data
 		warte 500ms
-		warte, wenn kein Preview: ~10s für 300 DPI, ~35s für 600dpi (A4)
+		warte, wenn kein Preview: ~10s für 300 DPI, ~35s für 600 DPI (A4)
 		
 		lese: $jpegsize <byte>
 
 
 --------------------------------------------------------------------------------------------------------
-Beispiel: wie 300 dpi Scan einlesen:
+Beispiel: wie 300 DPI Scan einlesen:
 - socket öffnen
 - 50006000
 - wenn Antwort nicht 'scanready', abbrechen
