@@ -72,53 +72,55 @@ public class S400W
 	
 	// Commands
 	/** Command: Get version */
-	public final static byte[] GET_VERSION       = {  0x30,  0x30, 0x20,  0x20 };
+	private final static byte[] GET_VERSION       = {  0x30,  0x30, 0x20,  0x20 };
 	/** Command: Get status */
-	public final static byte[] GET_STATUS        = {  0x00,  0x60, 0x00,  0x50 };
+	private final static byte[] GET_STATUS        = {  0x00,  0x60, 0x00,  0x50 };
 	/** Command: Start cleaning */
-	public final static byte[] START_CLEANING    = { -0x80, -0x80, 0x70,  0x70 };
+	private final static byte[] START_CLEANING    = { -0x80, -0x80, 0x70,  0x70 };
 	/** Command: Start calibration */
-	public final static byte[] START_CALIBRATION = {  0x00, -0x50, 0x00, -0x60 };
+	private final static byte[] START_CALIBRATION = {  0x00, -0x50, 0x00, -0x60 };
 	/** Command: Set standard DPI (300) */
-	public final static byte[] SET_DPI_STANDARD  = {  0x40,  0x30, 0x20,  0x10 };
+	private final static byte[] SET_DPI_STANDARD  = {  0x40,  0x30, 0x20,  0x10 };
 	/** Command: Set high DPI (600) */
-	public final static byte[] SET_DPI_HIGH      = { -0x80,  0x70, 0x60,  0x50 };
+	private final static byte[] SET_DPI_HIGH      = { -0x80,  0x70, 0x60,  0x50 };
 	/** Command: Start scanning */
-	public final static byte[] START_SCAN        = {  0x00,  0x20, 0x00,  0x10 };
+	private final static byte[] START_SCAN        = {  0x00,  0x20, 0x00,  0x10 };
 	/** Command: Start sending preview data */
-	public final static byte[] SEND_PREVIEW_DATA = {  0x40,  0x40, 0x30,  0x30 };
+	private final static byte[] SEND_PREVIEW_DATA = {  0x40,  0x40, 0x30,  0x30 };
 	/** Command: Get jpeg size */
-	public final static byte[] GET_JPEG_SIZE     = {  0x00, -0x30, 0x00, -0x40 };
+	private final static byte[] GET_JPEG_SIZE     = {  0x00, -0x30, 0x00, -0x40 };
 	/** Command: Start sending jpeg data */
-	public final static byte[] SEND_JPEG_DATA    = {  0x00, -0x10, 0x00, -0x20 };
+	private final static byte[] SEND_JPEG_DATA    = {  0x00, -0x10, 0x00, -0x20 };
 
 	// Responses (note that no response starts with another response, so no terminating character necessary)
 	/** Response: Device busy */
-	public final static byte[] DEVICE_BUSY       = { 'd','e','v','b','u','s','y' };
+	public final static byte[] DEVICE_BUSY   = { 'd','e','v','b','u','s','y' };
 	/** Response: Battery low */
-	public final static byte[] BATTERY_LOW       = { 'b','a','t','t','l','o','w' };
+	public final static byte[] BATTERY_LOW   = { 'b','a','t','t','l','o','w' };
 	/** Response: No paper inserted */
-	public final static byte[] NOPAPER           = { 'n','o','p','a','p','e','r' };
+	public final static byte[] NOPAPER       = { 'n','o','p','a','p','e','r' };
 	/** Response: Paper inserted, ready to scan, calibrate, clean */
-	public final static byte[] SCAN_READY        = { 's','c','a','n','r','e','a','d','y' };
+	public final static byte[] SCAN_READY    = { 's','c','a','n','r','e','a','d','y' };
 	/** Response: Calibration has started */
-	public final static byte[] CALIBRATE_GO      = { 'c','a','l','g','o' };
+	public final static byte[] CALIBRATE_GO  = { 'c','a','l','g','o' };
 	/** Response: Calibration has finished */
-	public final static byte[] CALIBRATE_END     = { 'c','a','l','i','b','r','a','t','e' };
+	public final static byte[] CALIBRATE_END = { 'c','a','l','i','b','r','a','t','e' };
 	/** Response: Cleaning has started */
-	public final static byte[] CLEAN_GO          = { 'c','l','e','a','n','g','o' };
+	public final static byte[] CLEAN_GO      = { 'c','l','e','a','n','g','o' };
 	/** Response: Cleaning has finished */
-	public final static byte[] CLEAN_END         = { 'c','l','e','a','n','e','n','d' };
+	public final static byte[] CLEAN_END     = { 'c','l','e','a','n','e','n','d' };
 	/** Response: Standard DPI selected */
-	public final static byte[] DPI_STANDARD      = { 'd','p','i','s','t','d' };
+	public final static byte[] DPI_STANDARD  = { 'd','p','i','s','t','d' };
 	/** Response: High DPI selected */
-	public final static byte[] DPI_HIGH          = { 'd','p','i','f','i','n','e' };
+	public final static byte[] DPI_HIGH      = { 'd','p','i','f','i','n','e' };
 	/** Response: Scanning has started */
-	public final static byte[] SCAN_GO           = { 's','c','a','n','g','o' };
+	public final static byte[] SCAN_GO       = { 's','c','a','n','g','o' };
 	/** Response: Preview data in stream end marker */
-	public final static byte[] PREVIEW_END       = { 'p','r','e','v','i','e','w','e','n','d' };
+	public final static byte[] PREVIEW_END   = { 'p','r','e','v','i','e','w','e','n','d' };
 	/** Response: JPEG size */
-	public final static byte[] JPEG_SIZE         = { 'j','p','e','g','s','i','z','e' };
+	public final static byte[] JPEG_SIZE     = { 'j','p','e','g','s','i','z','e' };
+	/** Artifical response: EOF */
+	public final static byte[] EOF           = {};
 	
 	/** for mapping raw to constants */
 	private final static byte[][] RESPONSES = {
@@ -137,9 +139,6 @@ public class S400W
 		JPEG_SIZE,	
 	};
 	
-	/** Artifical response: EOF */
-	public final static byte[] EOF = {};
-
 	/** Internal receive buffer, default responses should fit in 16 bytes */
 	private byte[] _buffer = new byte[16];
 	
@@ -147,7 +146,7 @@ public class S400W
 	private Selector _selector;
 	
 	/** IO Channel */
-	volatile private SocketChannel _socket = null;
+	private SocketChannel _socket = null;
 	
 	/** Default timeout, sufficient for simple calls that don't start things. */
 	private int _timeout = 10000;
@@ -179,132 +178,6 @@ public class S400W
 	}
 	
 
-	/**
-	 * Opens a socket to the target.
-	 * 
-	 * @throws IOException If the socket cannot be opened and set up correctly.
-	 */
-	private void openSocket() throws IOException
-	{
-		if ( log.isLoggable(Level.FINE) ) log.fine("opening socket to " + _targetHost + ":" + _targetPort);
-		_selector = Selector.open();
-		_socket = SocketChannel.open();
-		_socket.connect(new InetSocketAddress(_targetHost, _targetPort));
-		_socket.finishConnect();
-		_socket.configureBlocking(false);
-		_socket.register(_selector, SelectionKey.OP_READ);
-	}
-	
-	
-	/**
-	 * Closes the target connection.
-	 */
-	private void closeSocket()
-	{
-		if ( _socket  !=null ) try { _socket  .close(); } catch (Exception e) {}
-		if ( _selector!=null ) try { _selector.close(); } catch (Exception e) {} 
-		_socket = null;
-		_selector = null;
-		
-	}
-	
-	
-	/**
-	 * Sends a command to the target and sleep 100 ms.
-	 * 
-	 * @param command the command.
-	 * @throws IOException if sending the buffer fails.
-	 * @throws InterruptedException if interrupted while sleeping.
-	 */
-	protected void sendCommand(byte[] command) throws IOException, InterruptedException
-	{
-		if ( log.isLoggable(Level.FINE) ) log.fine("sendCommand(" + Arrays.toString(command) + ")");
-		_socket.write(ByteBuffer.wrap(command));
-		sleep(100);
-	}
-	
-
-	/**
-	 * Equivalent to {@link #receive(byte[], int)} with {@link #_timeout} as timeout.
-	 */
-	protected int receive(byte[] buffer) throws IOException
-	{
-		return receive(buffer, _timeout);
-	}
-
-	
-	/**
-	 * Equivalent to {@link #receive(ByteBuffer, int)} with the buffer wrapped into a {@link ByteBuffer}.
-	 */
-	protected int receive(byte[] buffer, int timeout) throws IOException
-	{
-		return receive(ByteBuffer.wrap(buffer), timeout);
-	}
-	
-	
-	/**
-	 * Reads a number of bytes, not necessarily as many as the buffer has space for.
-	 * 
-	 * @param buffer the recieve buffer
-	 * @param timeout time to wait for a bytes to arrive in seconds
-	 * @return Number of bytes read, 0 if timeout reached, or -1 for EOF.
-	 * @throws IOException If IO errors occurred.
-	 */
-	protected int receive(ByteBuffer buffer, int timeout) throws IOException
-	{
-		if ( _selector.select(timeout)>0 ) {
-			int r = _socket.read(buffer);
-			if ( log.isLoggable(Level.FINER) ) log.finer("receive(): read " + r + " bytes");
-			_selector.selectedKeys().clear();
-			return r; // shouldn't be 0
-		}
-		if ( log.isLoggable(Level.FINER) ) log.finer("receive(): no data");
-		return 0;
-	}
-
-	
-	/**
-	 * Matches a response to the know responses and returns the constant, so that <code>==</code> can be used later on.
-	 * 
-	 * @param buffer the original response
-	 * @param length number of bytes set in <code>buffer</code>
-	 * @return response constant matching the response or <code>buffer</code> if unknown response. 
-	 */
-	protected byte[] detectResponse(byte[] buffer, int length)
-	{
-		if ( length <0 ) return EOF;
-		if ( length==0 ) return null;
-		for ( int i = 0; i<RESPONSES.length; i++ ) {
-			if ( length>=RESPONSES[i].length && cmp(buffer, 0, RESPONSES[i], 0, RESPONSES[i].length) ) return RESPONSES[i];
-		}
-		return buffer;
-	}	
-	
-
-	/**
-	 * Equivalent to {@link #readResponse(int)} with {@link #_timeout} as timeout.
-	 */
-	protected byte[] readResponse() throws IOException
-	{
-		return readResponse(_timeout);
-	}	
-	
-	
-	/**
-	 * Reads in a short response using a zerored {@link #_buffer},
-	 * {@link #receive(byte[], int)} and {@link #detectResponse(byte[], int)}.
-	 *  
-	 * @param timeout seconds to wait for a response
-	 * @return the detected response 
-	 * @throws IOException If errors occurred while reading the response
-	 */
-	protected byte[] readResponse(int timeout) throws IOException
-	{
-		Arrays.fill(_buffer, (byte)0);
-		return detectResponse(_buffer, receive(_buffer, timeout));
-	}	
-
-	
 	/**
 	 * Reads the scanner's version. The returned bytes can be converted into a string using {@link #toString(byte[])}.
 	 * 
@@ -632,6 +505,132 @@ public class S400W
 
 	
 	/**
+	 * Opens a socket to the target.
+	 * 
+	 * @throws IOException If the socket cannot be opened and set up correctly.
+	 */
+	private void openSocket() throws IOException
+	{
+		if ( log.isLoggable(Level.FINE) ) log.fine("opening socket to " + _targetHost + ":" + _targetPort);
+		_selector = Selector.open();
+		_socket = SocketChannel.open();
+		_socket.connect(new InetSocketAddress(_targetHost, _targetPort));
+		_socket.finishConnect();
+		_socket.configureBlocking(false);
+		_socket.register(_selector, SelectionKey.OP_READ);
+	}
+	
+	
+	/**
+	 * Closes the target connection.
+	 */
+	private void closeSocket()
+	{
+		if ( _socket  !=null ) try { _socket  .close(); } catch (Exception e) {}
+		if ( _selector!=null ) try { _selector.close(); } catch (Exception e) {} 
+		_socket = null;
+		_selector = null;
+		
+	}
+	
+	
+	/**
+	 * Sends a command to the target and sleep 100 ms.
+	 * 
+	 * @param command the command.
+	 * @throws IOException if sending the buffer fails.
+	 * @throws InterruptedException if interrupted while sleeping.
+	 */
+	private void sendCommand(byte[] command) throws IOException, InterruptedException
+	{
+		if ( log.isLoggable(Level.FINE) ) log.fine("sendCommand(" + Arrays.toString(command) + ")");
+		_socket.write(ByteBuffer.wrap(command));
+		sleep(100);
+	}
+	
+
+	/**
+	 * Equivalent to {@link #receive(byte[], int)} with {@link #_timeout} as timeout.
+	 */
+	private int receive(byte[] buffer) throws IOException
+	{
+		return receive(buffer, _timeout);
+	}
+
+	
+	/**
+	 * Equivalent to {@link #receive(ByteBuffer, int)} with the buffer wrapped into a {@link ByteBuffer}.
+	 */
+	private int receive(byte[] buffer, int timeout) throws IOException
+	{
+		return receive(ByteBuffer.wrap(buffer), timeout);
+	}
+	
+	
+	/**
+	 * Reads a number of bytes, not necessarily as many as the buffer has space for.
+	 * 
+	 * @param buffer the recieve buffer
+	 * @param timeout time to wait for a bytes to arrive in seconds
+	 * @return Number of bytes read, 0 if timeout reached, or -1 for EOF.
+	 * @throws IOException If IO errors occurred.
+	 */
+	private int receive(ByteBuffer buffer, int timeout) throws IOException
+	{
+		if ( _selector.select(timeout)>0 ) {
+			int r = _socket.read(buffer);
+			if ( log.isLoggable(Level.FINER) ) log.finer("receive(): read " + r + " bytes");
+			_selector.selectedKeys().clear();
+			return r; // shouldn't be 0
+		}
+		if ( log.isLoggable(Level.FINER) ) log.finer("receive(): no data");
+		return 0;
+	}
+
+	
+	/**
+	 * Matches a response to the know responses and returns the constant, so that <code>==</code> can be used later on.
+	 * 
+	 * @param buffer the original response
+	 * @param length number of bytes set in <code>buffer</code>
+	 * @return response constant matching the response or <code>buffer</code> if unknown response. 
+	 */
+	private byte[] detectResponse(byte[] buffer, int length)
+	{
+		if ( length <0 ) return EOF;
+		if ( length==0 ) return null;
+		for ( int i = 0; i<RESPONSES.length; i++ ) {
+			if ( length>=RESPONSES[i].length && cmp(buffer, 0, RESPONSES[i], 0, RESPONSES[i].length) ) return RESPONSES[i];
+		}
+		return buffer;
+	}	
+	
+
+	/**
+	 * Equivalent to {@link #readResponse(int)} with {@link #_timeout} as timeout.
+	 */
+	private byte[] readResponse() throws IOException
+	{
+		return readResponse(_timeout);
+	}	
+	
+	
+	/**
+	 * Reads in a short response using a zerored {@link #_buffer},
+	 * {@link #receive(byte[], int)} and {@link #detectResponse(byte[], int)}.
+	 *  
+	 * @param timeout seconds to wait for a response
+	 * @return the detected response 
+	 * @throws IOException If errors occurred while reading the response
+	 */
+	private byte[] readResponse(int timeout) throws IOException
+	{
+		Arrays.fill(_buffer, (byte)0);
+		return detectResponse(_buffer, receive(_buffer, timeout));
+	}	
+
+	
+	/**
 	 * Convenience method for response logging.
 	 */
 	private void logResponse(String method, byte[] response)
@@ -648,7 +647,7 @@ public class S400W
 	 * Compares parts of two arrays for equality.
 	 * @return <code>true</code> if the both parts match
 	 */
-	boolean cmp(byte[] src, int srcOffset, byte[] dst, int dstOffset, int length)
+	private static boolean cmp(byte[] src, int srcOffset, byte[] dst, int dstOffset, int length)
 	{
 		if ( length>0 && srcOffset>=0 && dstOffset>=0 && srcOffset + length <= src.length && dstOffset + length <= dst.length ) {
 			while ( length-->0 ) if ( src[srcOffset++]!=dst[dstOffset++] ) return false;
