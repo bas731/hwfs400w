@@ -191,14 +191,9 @@ public class S400W
 			openSocket();
 			sendCommand(GET_VERSION);
 			sleep(200);
-			Arrays.fill(_buffer, (byte)0);
-			int read = receive(_buffer);
-			if ( read>0 ) {
-				if ( log.isLoggable(Level.FINE) ) log.fine("getVersion(): " + toString(_buffer));
-				return _buffer;
-			}
-			if ( log.isLoggable(Level.FINE) ) log.fine("getVersion(): <no data>");
-			return read==0 ? null : EOF;
+			byte[] response = readResponse();
+			logResponse("getVersion", response);
+			return response;
 		}
 		catch (IOException e) {
 			log.log(Level.SEVERE, "getVersion()", e);
@@ -223,8 +218,7 @@ public class S400W
 			openSocket();
 			sendCommand(GET_STATUS);
 			sleep(200);
-			int read = receive(_buffer);
-			byte[] response = detectResponse(_buffer, read);
+			byte[] response = readResponse();
 			logResponse("getStatus()", response);
 			return response;
 		}
@@ -478,6 +472,16 @@ public class S400W
 	
 	
 	/**
+	 * @return <code>true</code> if the response is one of the known scanner's responses (not {@link #EOF}).
+	 */
+	public static boolean isKnownResponse(byte[] buffer)
+	{
+		for ( byte[] res : RESPONSES ) if ( res==buffer ) return true;
+		return false;
+	}
+	
+
+	/**
 	 * Supports byte[] to String conversion by returning the index of the first zero byte in the response.
 	 * @return The index of the first 0-byte or the length of the byte buffer if no 0-byte is found. 
 	 */
@@ -549,15 +553,6 @@ public class S400W
 	}
 	
 
-	/**
-	 * Equivalent to {@link #receive(byte[], int)} with {@link #_timeout} as timeout.
-	 */
-	private int receive(byte[] buffer) throws IOException
-	{
-		return receive(buffer, _timeout);
-	}
-
-	
 	/**
 	 * Equivalent to {@link #receive(ByteBuffer, int)} with the buffer wrapped into a {@link ByteBuffer}.
 	 */

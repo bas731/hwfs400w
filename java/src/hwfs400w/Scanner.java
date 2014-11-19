@@ -34,7 +34,7 @@ public class Scanner
 		byte[] buf;
 		if ( "version".equals(args[0])  ) {
 			buf = r.getVersion();
-			if ( buf==null || buf==S400W.EOF ) System.exit(-1);
+			if ( buf==null || buf==S400W.EOF || S400W.isKnownResponse(buf) ) System.exit(-1);
 			System.out.println(S400W.toString(buf));
 		}
 		
