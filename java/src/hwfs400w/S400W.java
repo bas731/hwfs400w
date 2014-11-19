@@ -419,6 +419,7 @@ public class S400W
 			}
 			
 			if ( jpeg!=null ) {
+				if ( preview!=null ) sleep(1000);
 				final int sizeTimeout = preview==null
 					? Integer.getInteger(PROPERTY_KEY + ".timeout.jpeg-only", 60000)
 					: Integer.getInteger(PROPERTY_KEY + ".timeout.jpeg-size", 20000);
