@@ -102,14 +102,18 @@ static const long _timeout = 10000L;
 
 static void mssleep(long ms)
 {
+#ifdef WIN32
+	_sleep(ms);
+#else
 	//struct timespec tv;
 	//tv.tv_sec  = ms / 1000;
 	//tv.tv_nsec = ms % 1000 * 1000000L;
 	//nanosleep(tv);
 	struct timeval tv;
 	tv.tv_sec  = ms / 1000;
-	tv.tv_usec = ms % 1000 * 1000;
+	tv.tv_usec = (ms % 1000) * 1000;
 	select(0, NULL, NULL, NULL, &tv);
+#endif
 }
 
 
