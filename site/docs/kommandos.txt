@@ -58,7 +58,7 @@ Bekannte Antworten lassen sich auf ASCII Strings für die ersten <bytes> mappen, 
 
 - dpifine
 	Auflösung auf 600 DPI gesetzt.
-	(Wird nach erfolgreichem Scan wieder auf 300 DPI gesetzt).
+	(Wird manchmal nach erfolgreichem Scan wieder auf 300 DPI gesetzt).
 
 - scango
 	Gerät busy, Scannen gestartet.
@@ -116,7 +116,7 @@ a000b000 calibrate (benötigt Status 'scanready')
 
 30304040 send preview data
 		warte 1s
-		lese: n * 1920 <byte> (640 Pixel pro Zeile, 3 <byte> pro Pixel: RGB)
+		lese: n * 1920 <byte> (640 Pixel pro Zeile, 3 <byte> pro Pixel: RGB, anscheinend maximal 1200 Zeilen)
 		endet auf 'previewend' <byte>
 		warte 1s
 

@@ -12,7 +12,7 @@
 <h1 class="first">Mustek S400W iScan Air</h1> 
 
 <p>The Mustek S400W iScan Air aka ion Air Copy [+E-Post Edition] aka Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー aka HALO Wireless Portable Scanner
-	is a simple document scanner for up to A4 wide documents (length might be a little longer).
+	is a simple document scanner for up to A4 wide documents with up to 40.5 cm length (almost ~9570 vertical pixel for 600 DPI!).
 	Prices range from high (>100 €/$) to very low (30 € incl. VAT) in special sales - like the ion E-Post edition.
 </p>
 
@@ -188,7 +188,7 @@ Known responses map to ascii strings for the first n &lt;byte&gt; followed by pa
 <dd>Resolution set to 300 DPI.</dd>
 
 <dt><code>dpifine</code></dt>
-<dd>Resolution set to 600 DPI.<br> Note that resolution is reset to 300 DPI after a successful scan!</dd>
+<dd>Resolution set to 600 DPI.<br> Note that resolution is sometimes reset to 300 DPI after a successful scan!</dd>
 
 <dt><code>scango</code></dt>
 <dd>Device busy, scanning has started.</dd>
@@ -263,7 +263,7 @@ read 'scango'
 
 <dt><code>30304040</code>: send preview data</dt>
 <dd>wait 1s<br>
-read n * 1920 &lt;byte&gt; (640 pixel per line, 3 &lt;byte&gt; per pixel: RGB)
+read n * 1920 &lt;byte&gt; (640 pixel per line, 3 &lt;byte&gt; per pixel: RGB, most likely 1200 lines max)
 ends on 'previewend' &lt;byte&gt;<br>
 wait 1s
 </dd>

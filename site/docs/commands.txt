@@ -1,9 +1,6 @@
 This file is licensed under Creative Commons License CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
 --------------------------------------------------------------------------------------------------------
 
-TODO: max scan length inch: 17
-
---------------------------------------------------------------------------------------------------------
 Legend:
 <byte>  : octet bits
 <number>: 4 byte, little endian
@@ -61,7 +58,7 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 - dpifine
 	Resolution set to 600 DPI.
-	Note that resolution is reset to 300 DPI after a successful scan!
+	Note that resolution is sometimes reset to 300 DPI after a successful scan!
 
 - scango
 	Device busy, scanning has started.
@@ -121,7 +118,7 @@ a000b000 calibrate (requires status 'scanready')
 
 30304040 send preview data
 		wait 1s
-		read n * 1920 <byte> (640 pixel per line, 3 <byte> per pixel: RGB)
+		read n * 1920 <byte> (640 pixel per line, 3 <byte> per pixel: RGB, most likely 1200 lines max)
 		ends on 'previewend' <byte>
 		wait 1s
 
