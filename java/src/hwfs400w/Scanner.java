@@ -83,7 +83,7 @@ public class Scanner
 		}
 			
 		else if ( "scan".equals(args[0]) ) {
-			final int dpi  = args.length <3  ? null : "dpi300".equals(args[1]) ? 300 : "dpi600".equals(args[1]) ? 600 : 0;
+			final int dpi  = args.length <3  ? 0 : "dpi300".equals(args[1]) ? 300 : "dpi600".equals(args[1]) ? 600 : 0;
 			final String  name = args.length==1 ? ("./" + System.currentTimeMillis() + ".jpg") : args.length==2 ? args[1] : args[2];
 			buf = r.scan(dpi, null, new Receiver() {
 				FileOutputStream o = null;
