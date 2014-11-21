@@ -2,59 +2,57 @@
  *
  * Created 2014-11-16 by bastel.
  *
- * Implements a low level interface to the Mustek<sup>&#174;</sup> S400W iScanAir&#8482; scanner.
- * <br>
- * This is a clean room implementation based on written down specs (see commands.txt)
- * and does not contain any code by mustek. Using simple java, constants and non blocking I/O,
- * it's easy to understand, clean and easily portable to other programming languages.
- * <p>
- * Scanner related methods usually return a byte array containing the scanner's response. Please be aware
- * that the response array is not a copy and not constant for unknown responses but will be altered on the next
- * call to any scanner related method. Do not store it 'for later'.
- * Returned known responses are mapped to their static equivalent and can be stored and compared with <code>==</code>.
- * This also means that this class is not thread safe.
- * <p>
- * Note: The class supports {@link Logger} logging.
- * <p>
- * This file is licensed under the <a href="http://creativecommons.org/publicdomain/zero/1.0/">Creative Commons License CC-CC0 1.0</a>.
+ * See s400w.h for further information.
  *
  * @author bastel
  */
 
-#include <stdio.h>
-#include <string.h>
+#ifdef WIN32
+// needs lib: ws2_32.lib
+//#	define FD_SETSIZE	1024
+#	include <winsock2.h>
+#	pragma comment(lib, "Ws2_32.lib")
+#	include <stdlib.h>
+#	include <stdio.h>
+#	include <string.h>
+#else
+#	include <stdlib.h>
+#	include <stdio.h>
+#	include <string.h>
+#	include <sys/socket.h>
+#	include <sys/select.h>
+#	include <netdb.h>
+#	include <unistd.h>
+#	define closesocket close
+#endif
 
-#include <sys/socket.h>
-#include <sys/select.h>
-#include <netdb.h>
 #include <fcntl.h>
-#include <unistd.h>
-
 #include <errno.h>
-
 
 #include "s400w.h"
 
-const char const* S400W_LIB_VERSION = "20141116";
+int (*S400W_DEBUG)(const char* format, ...) = NULL;
+
+const char* S400W_LIB_VERSION = "20141116";
 
 const int MIN_SET_RESOLUTION_FW = 26;
 
 // Responses (note that no response starts with another response, so no terminating character necessary)
-const unsigned char DEVICE_BUSY[]   = { 'd','e','v','b','u','s','y',0 };
-const unsigned char BATTERY_LOW[]   = { 'b','a','t','t','l','o','w',0 };
-const unsigned char NOPAPER[]       = { 'n','o','p','a','p','e','r',0 };
-const unsigned char SCAN_READY[]    = { 's','c','a','n','r','e','a','d','y',0 };
-const unsigned char CALIBRATE_GO[]  = { 'c','a','l','g','o',0 };
-const unsigned char CALIBRATE_END[] = { 'c','a','l','i','b','r','a','t','e',0 };
-const unsigned char CLEAN_GO[]      = { 'c','l','e','a','n','g','o',0 };
-const unsigned char CLEAN_END[]     = { 'c','l','e','a','n','e','n','d',0 };
-const unsigned char DPI_STANDARD[]  = { 'd','p','i','s','t','d',0 };
-const unsigned char DPI_HIGH[]      = { 'd','p','i','f','i','n','e',0 };
-const unsigned char SCAN_GO[]       = { 's','c','a','n','g','o',0 };
-const unsigned char PREVIEW_END[]   = { 'p','r','e','v','i','e','w','e','n','d',0 };
-const unsigned char JPEG_SIZE[]     = { 'j','p','e','g','s','i','z','e',0 };
-const unsigned char SEOF[]          = { 0 };
-const unsigned char SERR[]          = { 0 };
+const char DEVICE_BUSY[]   = { 'd','e','v','b','u','s','y',0 };
+const char BATTERY_LOW[]   = { 'b','a','t','t','l','o','w',0 };
+const char NOPAPER[]       = { 'n','o','p','a','p','e','r',0 };
+const char SCAN_READY[]    = { 's','c','a','n','r','e','a','d','y',0 };
+const char CALIBRATE_GO[]  = { 'c','a','l','g','o',0 };
+const char CALIBRATE_END[] = { 'c','a','l','i','b','r','a','t','e',0 };
+const char CLEAN_GO[]      = { 'c','l','e','a','n','g','o',0 };
+const char CLEAN_END[]     = { 'c','l','e','a','n','e','n','d',0 };
+const char DPI_STANDARD[]  = { 'd','p','i','s','t','d',0 };
+const char DPI_HIGH[]      = { 'd','p','i','f','i','n','e',0 };
+const char SCAN_GO[]       = { 's','c','a','n','g','o',0 };
+const char PREVIEW_END[]   = { 'p','r','e','v','i','e','w','e','n','d',0 };
+const char JPEG_SIZE[]     = { 'j','p','e','g','s','i','z','e',0 };
+const char SEOF[]          = { 0 };
+const char SERR[]          = { 0 };
 
 
 
@@ -62,7 +60,7 @@ const unsigned char SERR[]          = { 0 };
 // Private /
 ////////////
 
-static const unsigned char* RESPONSES[] = {
+static const char* RESPONSES[] = {
 	DEVICE_BUSY,
 	BATTERY_LOW,
 	NOPAPER,
@@ -79,19 +77,24 @@ static const unsigned char* RESPONSES[] = {
 	NULL
 };
 
-static const unsigned char GET_VERSION[]       = {  0x30,  0x30, 0x20,  0x20 };
-static const unsigned char GET_STATUS[]        = {  0x00,  0x60, 0x00,  0x50 };
-static const unsigned char START_CLEANING[]    = { -0x80, -0x80, 0x70,  0x70 };
-static const unsigned char START_CALIBRATION[] = {  0x00, -0x50, 0x00, -0x60 };
-static const unsigned char SET_DPI_STANDARD[]  = {  0x40,  0x30, 0x20,  0x10 };
-static const unsigned char SET_DPI_HIGH[]      = { -0x80,  0x70, 0x60,  0x50 };
-static const unsigned char START_SCAN[]        = {  0x00,  0x20, 0x00,  0x10 };
-static const unsigned char SEND_PREVIEW_DATA[] = {  0x40,  0x40, 0x30,  0x30 };
-static const unsigned char GET_JPEG_SIZE[]     = {  0x00, -0x30, 0x00, -0x40 };
-static const unsigned char SEND_JPEG_DATA[]    = {  0x00, -0x10, 0x00, -0x20 };
+static const char GET_VERSION[]       = {  0x30,  0x30, 0x20,  0x20 };
+static const char GET_STATUS[]        = {  0x00,  0x60, 0x00,  0x50 };
+static const char START_CLEANING[]    = { -0x80, -0x80, 0x70,  0x70 };
+static const char START_CALIBRATION[] = {  0x00, -0x50, 0x00, -0x60 };
+static const char SET_DPI_STANDARD[]  = {  0x40,  0x30, 0x20,  0x10 };
+static const char SET_DPI_HIGH[]      = { -0x80,  0x70, 0x60,  0x50 };
+static const char START_SCAN[]        = {  0x00,  0x20, 0x00,  0x10 };
+static const char SEND_PREVIEW_DATA[] = {  0x40,  0x40, 0x30,  0x30 };
+static const char GET_JPEG_SIZE[]     = {  0x00, -0x30, 0x00, -0x40 };
+static const char SEND_JPEG_DATA[]    = {  0x00, -0x10, 0x00, -0x20 };
 
 /** Internal receive buffer, default responses should fit in 16 bytes */
-static unsigned char _buffer[16];
+static char _buffer[16];
+
+
+/** Internal big receive buffer, size arbitrarily chosen to be 16 preview lines + endmarker + padding byte */
+static char _bigBuffer[30720 + sizeof(PREVIEW_END)];
+
 
 /** Default timeout, sufficient for simple calls that don't start things. */
 static const long _timeout = 10000L;
@@ -112,6 +115,9 @@ static void mssleep(long ms)
 
 static int openSocket(const char* hostname, int port)
 {
+#ifdef WIN32
+	unsigned long u1 = 1;
+#endif
 	struct hostent* hp;    // host name lookup
 	struct sockaddr_in sa; // socket addr. structure
 	int fd;                // stream file descriptor
@@ -141,7 +147,11 @@ static int openSocket(const char* hostname, int port)
 	}
 
 	// set socket nonblocking
+#ifdef WIN32
+	if ( ioctlsocket(fd, FIONBIO, &u1) ) {
+#else
 	if ( fcntl(fd, F_SETFL, O_NONBLOCK)==-1 ) {
+#endif
 		fprintf(stderr, "openSocket(): Error: couldn't set to nonblocking!\n");
 		return -1;
 	}
@@ -172,16 +182,16 @@ static int checkStream(int fd, long timeout)
 
 
 
-static int sendCommand(int fd, const unsigned char* command)
+static int sendCommand(int fd, const char* command)
 {
 	int sent = fd ? send(fd, command, 4, 0) : -1;
-	fprintf(stderr, "sendCommand(): %x: %d\n", *(unsigned int*)command, sizeof(command));
+	if ( S400W_DEBUG ) S400W_DEBUG("sendCommand(): %x: %d\n", *(unsigned int*)command, sizeof(command));
 	if ( sent>0 ) mssleep(100);
 	return sent;
 }
 
 
-static int recvResponse(int fd, unsigned char* buffer, int limit, long timeout)
+static int recvResponse(int fd, char* buffer, int limit, long timeout)
 {
 	if ( fd>=0 ) {
 		if ( checkStream(fd, timeout) & 1 ) {
@@ -201,9 +211,9 @@ static int recvResponse(int fd, unsigned char* buffer, int limit, long timeout)
 }
 
 
-static const unsigned char* detectResponse(const unsigned char* buffer, int length)
+static const char* detectResponse(const char* buffer, int length)
 {
-	const unsigned char** res;
+	const char** res;
 	if ( length==0 ) return NULL;
 	if ( length <0 ) return SEOF;
 	for ( res = RESPONSES; *res; res++ ) {
@@ -214,7 +224,7 @@ static const unsigned char* detectResponse(const unsigned char* buffer, int leng
 }
 
 
-static const unsigned char* readResponse(int fd, long timeout)
+static const char* readResponse(int fd, long timeout)
 {
 	memset(_buffer, 0, sizeof(_buffer));
 	return detectResponse(_buffer, recvResponse(fd, _buffer, sizeof(_buffer), timeout));
@@ -227,41 +237,41 @@ static const unsigned char* readResponse(int fd, long timeout)
 ///////////
 
 
-int isKnownResponse(const unsigned char* response)
+int isKnownResponse(const char* response)
 {
-	const unsigned char** res;
+	const char** res;
 	for ( res = RESPONSES; *res; res++ ) if ( *res==response ) return 1;
 	return 0;
 }
 
 
-const unsigned char* getVersion(const char* host, int port)
+const char* getVersion(const char* host, int port)
 {
-	const unsigned char* response = SEOF;
+	const char* response = SEOF;
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		if ( sendCommand(fd, GET_VERSION)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("getVersion(): %s\n", response);
+			if ( S400W_DEBUG ) S400W_DEBUG("getVersion(): %s\n", response);
 		}
-		close(fd);
+		closesocket(fd);
 	}
 	return response;
 }
 
 
-const unsigned char* getStatus(const char* host, int port)
+const char* getStatus(const char* host, int port)
 {
-	const unsigned char* response = SEOF;
+	const char* response = SEOF;
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		if ( sendCommand(fd, GET_STATUS)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("getStatus(): %s\n", response);
+			if ( S400W_DEBUG ) S400W_DEBUG("getStatus(): %s\n", response);
 		}
-		close(fd);
+		closesocket(fd);
 	}
 	return response;
 }
@@ -273,118 +283,112 @@ int setResolution(const char* host, int port, int dpi)
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		if ( sendCommand(fd, dpi==600 ? SET_DPI_HIGH : SET_DPI_STANDARD)>0 ) {
+			const char* response = readResponse(fd, _timeout);
 			mssleep(200);
-			const unsigned char* response = readResponse(fd, _timeout);
-			printf("setResolution(%d): %s\n", dpi, response);
+			if ( S400W_DEBUG ) S400W_DEBUG("setResolution(%d): %s\n", dpi, response);
 			result = dpi==600 && response==DPI_HIGH || dpi!=600 && response==DPI_STANDARD ? 1 : 0;
 		}
-		close(fd);
+		closesocket(fd);
 	}
 	return result;
 }
 
 
-const unsigned char* clean(const char* host, int port)
+const char* clean(const char* host, int port)
 {
-	const unsigned char* response = SEOF;
+	const char* response = SEOF;
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		if ( sendCommand(fd, GET_STATUS)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("clean().check: %s\n", response);
+			if ( S400W_DEBUG ) S400W_DEBUG("clean().check: %s\n", response);
 			if ( response==SCAN_READY ) {
 				sendCommand(fd, START_CLEANING);
 				mssleep(500);
 				response = readResponse(fd, _timeout);
-				printf("clean().go: %s\n", response);
+				if ( S400W_DEBUG ) S400W_DEBUG("clean().go: %s\n", response);
 				if ( response==CLEAN_GO ) {
 					response = readResponse(fd, 30000);
-					printf("clean().end: %s\n", response);
+					if ( S400W_DEBUG ) S400W_DEBUG("clean().end: %s\n", response);
 				}
 			}
 		}
-		close(fd);
+		closesocket(fd);
 	}
 	return response;
 }
 
 
-const unsigned char* calibrate(const char* host, int port)
+const char* calibrate(const char* host, int port)
 {
-	const unsigned char* response = SEOF;
+	const char* response = SEOF;
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		if ( sendCommand(fd, GET_STATUS)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("calibrate().check: %s\n", response);
+			if ( S400W_DEBUG ) S400W_DEBUG("calibrate().check: %s\n", response);
 			if ( response==SCAN_READY ) {
 				sendCommand(fd, START_CALIBRATION);
 				mssleep(500);
 				response = readResponse(fd, _timeout);
-				printf("calibrate().go: %s\n", response);
+				if ( S400W_DEBUG ) S400W_DEBUG("calibrate().go: %s\n", response);
 				if ( response==CALIBRATE_GO ) {
 					response = readResponse(fd, 60000);
-					printf("calibrate().end: %s\n", response);
+					if ( S400W_DEBUG ) S400W_DEBUG("calibrate().end: %s\n", response);
 				}
 			}
 		}
-		close(fd);
+		closesocket(fd);
 	}
 	return response;
 }
 
 
-// Executes the scanner's scanning procedure.
-// resolution: resolution setting, or <code>0</code> if no setting is supported / desired
-// preview: callback handler for preview data, or <code>null</code> if no preview should be read
-// jpeg: callback handler for jpeg data
-// Returns SCAN_READY if sucessfully finished, any other response otherwise, including SEOF or NULL for timeouts.
-const unsigned char* scan(const char* host, int port, int resolution, receiveFunc previewFunc, receiveFunc jpegFunc)
+const char* scan(const char* host, int port, int resolution, receiveFunc previewFunc, receiveFunc jpegFunc)
 {
-	const unsigned char* response = SEOF;
+	const char* response = SEOF;
 	int fd = openSocket(host, port);
 	if ( fd>0 ) {
 		const long timeoutData = 30000;
 		const long timeoutBoth = 20000;
 		const long timeoutJpeg = 60000;
-		const int  bufferSize  = 30720; // buffer size arbitrarily chosen to be 16 preview lines
-		const int  tagLength   = strlen(PREVIEW_END) + 1;
-		unsigned char buffer[bufferSize + tagLength];  
+		const int  tagLength   = sizeof(PREVIEW_END);
 		int abort = 0;
 		
 		if ( sendCommand(fd, GET_STATUS)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("scan().check: %s\n", response);
-			if ( response!=SCAN_READY ) abort = 1;
+			if ( S400W_DEBUG ) S400W_DEBUG("scan().check: %s\n", response);
+			if ( response!=SCAN_READY ) abort = 1; else mssleep(200);
 		} else abort = 1;
 			
 		if ( !abort && resolution>0 ) {
 			if ( sendCommand(fd, resolution==600 ? SET_DPI_HIGH : SET_DPI_STANDARD)>0 ) {
 				mssleep(200);
 				response = readResponse(fd, _timeout);
-				printf("scan().dpi(%d): %s\n", resolution, response);
+				if ( S400W_DEBUG ) S400W_DEBUG("scan().dpi(%d): %s\n", resolution, response);
 				abort = resolution==600 && response==DPI_HIGH || resolution!=600 && response==DPI_STANDARD ? 0 : 1;
+				if ( !abort ) mssleep(200);
 			} else abort = 1;
 		}
 		
 		if ( !abort && sendCommand(fd, START_SCAN)>0 ) {
 			mssleep(200);
 			response = readResponse(fd, _timeout);
-			printf("scan().go: %s\n", response);
-			if ( response!=SCAN_GO ) abort = 1;
+			if ( S400W_DEBUG ) S400W_DEBUG("scan().go: %s\n", response);
+			if ( response!=SCAN_GO ) abort = 1; else mssleep(200);
 		} else abort = 1;
 
 		if ( !abort && previewFunc ) {
 			if ( sendCommand(fd, SEND_PREVIEW_DATA)>0 ) {
-				unsigned char* partBuf = buffer + tagLength;
+				char* partBuf = _bigBuffer + tagLength;
 				int read, total = 0;
 
 				mssleep(1000);
-				read = recvResponse(fd, partBuf, bufferSize, timeoutData);
-				printf("scan().preview: %d\n", read);
+				read = recvResponse(fd, partBuf, sizeof(_bigBuffer) - tagLength, timeoutData);
+				if ( S400W_DEBUG ) S400W_DEBUG("scan().preview: %d\n", read);
 				
 				// if known response = error
 				if ( read>0 && read<=sizeof(_buffer) && detectResponse(partBuf, read)!=partBuf ) {
@@ -393,16 +397,17 @@ const unsigned char* scan(const char* host, int port, int resolution, receiveFun
 					memcpy(_buffer, partBuf, read);
 					response = _buffer;
 				} else {
-					previewFunc(SEND_PREVIEW_DATA, 0, 0);
+					int processPreview = 1;
+					//previewFunc(SEND_PREVIEW_DATA, 0, 0);
 					// this is a bit tricky. we need to carry over bytes in between fetching 
 					// so we can detect the end marker even if it is torn apart.
 					while ( read>0 ) {
 						total += read;
-						printf("scan().preview: %d (%d lines)\n", total, total / 1920);
-						previewFunc(partBuf, 0, read);
-						memmove(buffer, partBuf + read - tagLength, tagLength);
-						if ( memcmp(PREVIEW_END, buffer, tagLength - 1)==0 ) break; 					
-						read = recvResponse(fd, partBuf, bufferSize, timeoutData);
+						if ( S400W_DEBUG ) S400W_DEBUG("scan().preview: %d (%d lines)\n", total, total / 1920);
+						if ( processPreview>0 ) processPreview = previewFunc(partBuf, 0, read);
+						memmove(_bigBuffer, partBuf + read - tagLength, tagLength);
+						if ( memcmp(PREVIEW_END, _bigBuffer, tagLength - 1)==0 ) break; 					
+						read = recvResponse(fd, partBuf, sizeof(_bigBuffer) - tagLength, timeoutData);
 					}
 					if ( read <0 ) { response = SEOF; abort = 1; }
 					if ( read==0 ) { response = NULL; abort = 1; }
@@ -417,7 +422,7 @@ const unsigned char* scan(const char* host, int port, int resolution, receiveFun
 			if ( sendCommand(fd, GET_JPEG_SIZE)>0 ) {
 				mssleep(200);
 				response = readResponse(fd, previewFunc ? timeoutBoth : timeoutJpeg);
-				printf("scan().jpegsize: %s\n", response);
+				if ( S400W_DEBUG ) S400W_DEBUG("scan().jpegsize: %s\n", response);
 				if ( response==JPEG_SIZE ) {
 					int jslen = strlen(response);
 					// TODO: a bit lazy here, not checking if size read == JPEG_SIZE.length + 4...
@@ -425,61 +430,30 @@ const unsigned char* scan(const char* host, int port, int resolution, receiveFun
 						| 0x0000FF00 & (_buffer[jslen + 1] << 8)
 						| 0x00FF0000 & (_buffer[jslen + 2] << 16)
 						| 0xFF000000 & (_buffer[jslen + 3] << 24);
-					printf("scan().jpeg: %d bytes\n", size);
-		
-					jpegFunc(JPEG_SIZE, 0, size);
-					if ( sendCommand(fd, SEND_JPEG_DATA)>0 ) {
+					if ( S400W_DEBUG ) S400W_DEBUG("scan().jpeg: %d bytes\n", size);
+					
+					response = SEOF;
+					if ( jpegFunc(JPEG_SIZE, 0, size)>0 && sendCommand(fd, SEND_JPEG_DATA)>0 ) {
 						int read, total = 0;
 						mssleep(500);
 						do {
-							read = recvResponse(fd, buffer, sizeof(buffer), timeoutData);
+							read = recvResponse(fd, _bigBuffer, sizeof(_bigBuffer), timeoutData);
 							if ( read>0 ) {
 								total += read;
-								printf("scan().jpeg: %d / %d bytes\n", total, size);
-								jpegFunc(buffer, 0, read);
+								if ( S400W_DEBUG ) S400W_DEBUG("scan().jpeg: %d / %d bytes\n", total, size);
+								if ( jpegFunc(_bigBuffer, 0, read)<1 ) break;
 							}
 						} while ( total<size && read>0 );
+						if ( read <0 ) { response = SEOF; abort = 1; }
+						if ( read==0 ) { response = NULL; abort = 1; }
+						if ( read >0 ) { response = SCAN_READY; }
 					}
 					jpegFunc(SEOF,  0, 0);
-					if ( read <0 ) { response = SEOF; abort = 1; }
-					if ( read==0 ) { response = NULL; abort = 1; }
-					if ( read >0 ) { response = SCAN_READY; }
 				}
 			}
 		}
 			
-		close(fd);
+		closesocket(fd);
 	}
 	return response;
-}
-	
-FILE* file;
-	
-static int preview(const unsigned char* data, int offset, int length)
-{
-	if ( data==SEND_PREVIEW_DATA ) file = fopen("./test.raw", "w");
-	else if ( data==SEOF ) fclose(file);
-	else fwrite(data + offset, length, 1, file);
-	return 1;
-}
-
-
-int jpeg(const unsigned char* data, int offset, int length)
-{
-	if ( data==JPEG_SIZE ) file = fopen("./test.jpg", "w");
-	else if ( data==SEOF ) fclose(file);
-	else fwrite(data + offset, length, 1, file);
-	return 1;
-}
-
-
-void main()
-{
-	printf("version: %s\n",   getVersion   ("192.168.18.33", 23));
-	printf("status: %s\n",    getStatus    ("192.168.18.33", 23));
-//	printf("clean: %s\n",     clean        ("192.168.18.33", 23));
-//	printf("calibrate: %s\n", calibrate    ("192.168.18.33", 23));
-//	printf("%d\n",            setResolution("192.168.18.33", 23, 300));
-//	printf("%d\n",            setResolution("192.168.18.33", 23, 600));
-	printf("scan: %s\n",      scan         ("192.168.18.33", 23, 300, &preview, &jpeg));
 }
