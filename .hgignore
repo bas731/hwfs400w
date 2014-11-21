@@ -5,3 +5,6 @@ java/target/
 java/.settings/
 temp
 re
+c/win32/*/*
+c/win32/*.sdf
+c/win32/*.suo
