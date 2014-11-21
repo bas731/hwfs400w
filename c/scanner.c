@@ -31,7 +31,7 @@ static int preview(const char* data, int offset, int length)
 		file = NULL;
 	} else {
 		if ( !file ) {
-			file = fopen(name, "w");
+			file = fopen(name, "wb");
 			return file ? 1 : 0;
 		}
 		fwrite(data + offset, length, 1, file);
@@ -43,7 +43,7 @@ static int preview(const char* data, int offset, int length)
 static int jpeg(const char* data, int offset, int length)
 {
 	if ( data==JPEG_SIZE ) {
-		file = fopen(name, "w");
+		file = fopen(name, "wb");
 		return file ? 1 : 0;
 	}
 	if ( data==SEOF ) {
