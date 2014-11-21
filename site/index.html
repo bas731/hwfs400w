@@ -7,7 +7,7 @@
 	<title>Mustek S400W iScan Air / ion Air Copy [+E-Post Edition] / Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー / HALO Wireless Portable Scanner</title>
 </head>
 <body>
-<p>Last Update: 2014-11-16: reworked the docs, updated assets</p>
+<p>Last Update: 2014-11-21: fixed 300dpi reset after scan, added max scan length</p>
 
 <h1 class="first">Mustek S400W iScan Air</h1> 
 
@@ -18,7 +18,7 @@
 
 <p>Its predecessor is the Mustek S400 iScan docking station for iPads.</p>
 
-<p>It creates it's own WIFI network always named <code>DIRECT_&lt;mac&gt;-&lt;model&gt;</code> where &lt;mac&gt; are the last six digits
+<p>It creates its own WIFI network always named <code>DIRECT_&lt;mac&gt;-&lt;model&gt;</code> where &lt;mac&gt; are the last six digits
 	of the scanner's MAC address and the model is <i>AirCopy</i> or <i>iScanAir</i> etc.
 	The ip address is always <code>192.168.18.33</code> and the scanner service is listening on port <code>23</code>.
 	The scanner provides DHCP and allows clients that successfully aquired an IP via DHCP access to the scanning service.
@@ -118,13 +118,15 @@
 
 <p>I am providing free source code:</p>
 <ul>
-	<li>a sleek <a href="code/S400W.java">java library</a> supporting everything</li>
-	<li>a simple java <a href="code/Scanner.java">command line scanner</a> for demonstration purposes</li>
+	<li>finished: a sleek <a href="code/S400W.java">java library</a> supporting everything</li>
+	<li>finished: a simple java <a href="code/Scanner.java">command line scanner</a> for demonstration purposes</li>
+	<li>testing: a simple c library supporting everything</li>
+	<li>testing: a simple command line scanner</a> for demonstration purposes</li>
 </ul>
 
 <h2><a name="s2.3">2.3</a> Specification</h2>
 
-<p>Download specification in <a href="docs/commands.txt">english</a> or <a href="kommandos.txt">german</a>.</p>
+<p>Download specification in <a href="docs/commands.txt">english</a> or <a href="docs/kommandos.txt">german</a>.</p>
 
 <h3><a name="s2.3.1">2.3.1</a> Communication</h3>
 
