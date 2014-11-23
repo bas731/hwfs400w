@@ -1,4 +1,4 @@
-/* This file is licensed under CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).  
+/* This file is licensed under CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
  *
  * Created 2014-11-20 by bastel.
  */
@@ -10,11 +10,12 @@
 
 
 #ifdef WIN32
-/*#	define FD_SETSIZE	1024*/
 #	include <winsock2.h>
 #	pragma comment(lib, "Ws2_32.lib")
-#	define sleep(A) _sleep(1000 * A)
+#	define sleep(A) _sleep(1000 * (A))
 #	define snprintf sprintf_s
+#else
+#	include <unistd.h>
 #endif
 
 
@@ -23,36 +24,34 @@
 
 static const char* name = "";
 static FILE* file = NULL;
-	
-static int preview(const char* data, int offset, int length)
+
+static int preview(const char* data, int length)
 {
-	if ( data==SEOF ) {
+	if ( data==S400W_EOF ) {
 		if ( file ) fclose(file);
 		file = NULL;
-	} else {
-		if ( !file ) {
-			file = fopen(name, "wb");
-			return file ? 1 : 0;
-		}
-		fwrite(data + offset, length, 1, file);
+		return 0;
 	}
-	return 1;
+	if ( !file ) {
+		file = fopen(name, "wb");
+		return file ? 0 : -1;
+	}
+	return fwrite(data, length, 1, file)==1 ? 0 : -1;
 }
 
 
-static int jpeg(const char* data, int offset, int length)
+static int jpeg(const char* data, int length)
 {
-	if ( data==JPEG_SIZE ) {
-		file = fopen(name, "wb");
-		return file ? 1 : 0;
-	}
-	if ( data==SEOF ) {
+	if ( data==S400W_EOF ) {
 		if ( file ) fclose(file);
 		file = NULL;
-	} else {
-		fwrite(data + offset, length, 1, file);
+		return 0;
 	}
-	return 1;
+	else if ( data==S400W_JPEG_SIZE ) {
+		file = fopen(name, "wb");
+		return file ? 0 : -1;
+	}
+	return fwrite(data, length, 1, file)==1 ? 0 : -1;
 }
 
 
@@ -79,75 +78,93 @@ static int cleanup()
 }
 
 
+static void debug(int level, const char* message)
+{
+	switch (level)  {
+		case -1: fprintf(stderr, "Error> s400w: %s\n", message); break;
+		case 0:  fprintf(stdout, "Info > s400w: %s\n", message); break;
+		case 1:  fprintf(stdout, "Debug> s400w: %s\n", message); break;
+		/*case 2:  fprintf(stdout, "Debug: s400w: %s\n", message);*/
+	}
+}
+
+
+static int canDoDPI(struct S400W* s400w)
+{
+	const char* buf = s400w_get_version(s400w);
+	const char* dot;
+	sleep(1);
+	if ( buf==NULL || buf==S400W_EOF || s400w_is_known_response(buf) ) return -1;
+	dot = strchr(buf, '.') ;
+	return dot && atoi(dot + 1)>=S400W_MIN_SET_RESOLUTION_FW ? 0 : -1;
+}
+
+
 static int process(int argc, char *argv[])
 {
-	const char* host = argv[1];
-	const int port = atoi(argv[2]);
 	const char* cmd = argv[3];
-	const char** ev = argv + 4;
+	char** ev = argv + 4;
 	const int ec = argc - 4;
 	const char* buf;
-	S400W_DEBUG = printf;
-	init();
+	struct S400W s400w;
+	int ret = -1;
+
+	s400w_init(&s400w, argv[1], atoi(argv[2]), &debug);
 
 	if ( !strcmp("version", cmd) ) {
-		buf = getVersion(host, port);
-		if ( buf==NULL || buf==SEOF || isKnownResponse(buf) ) return -1;
-		printf("%s\n", buf);
+		buf = s400w_get_version(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf!=NULL && buf!=S400W_EOF && !s400w_is_known_response(buf) ) ret = 0;
 	}
-		
+
 	else if ( !strcmp("status", cmd) ) {
-		while ( 1 ) {
-			buf = getStatus(host, port);
-			if ( buf==NULL || buf==SEOF ) return -1;
-			printf("%s\n", buf);
-			sleep(5);
-		}
+		buf = s400w_get_status(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf!=NULL && buf!=S400W_EOF ) ret = 0;
 	}
-		
+
 	else if ( !strcmp("dpi", cmd) ) {
-		if ( ec>0 ) {
-			if ( strcmp("300", ev[0]) ) return setResolution(host, port, 300) ? 0 : -1;
-			if ( strcmp("600", ev[0]) ) return setResolution(host, port, 600) ? 0 : -1;
-		}
-		return -1;
+		if ( ec>0 && (!strcmp("300", ev[0]) || !strcmp("600", ev[0])) && !s400w_set_resolution(&s400w, atoi(ev[0])) ) ret = 0;
 	}
 
 	else if ( !strcmp("clean", cmd) ) {
-		buf = clean(host, port);
-		if ( buf!=CLEAN_END ) return -1;
-		printf("%s\n", buf);
+		buf = s400w_clean(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf==S400W_CLEAN_END ) ret = 0;
 	}
-		
+
 	else if ( !strcmp("calibrate", cmd) ) {
-		buf = calibrate(host, port);
-		if ( buf!=CALIBRATE_END ) return -1;
-		printf("%s\n", buf);
+		buf = s400w_calibrate(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf==S400W_CALIBRATE_END ) ret = 0;
 	}
 
 	else if ( !strcmp("preview", cmd) ) {
 		char temp[30];
 		snprintf(temp, 30, "./%d.raw", time(NULL));
 		name = ec>0 ? ev[0] : temp;
-		buf = scan(host, port, 0, preview, NULL);
-		printf("%s\n", buf);
+		buf = s400w_scan(&s400w, 0, preview, NULL);
+		printf("result: %s\n", buf);
+		if ( buf==S400W_SCAN_READY ) ret = 0;
 	}
-			
+
 	else if ( !strcmp("scan", cmd) ) {
-		const int dpi  = ec<1 ? 0 : !strcmp("dpi300", ev[0]) ? 300 : !strcmp("dpi600", ev[0]) ? 600 : 0;
+		const int dpi = ec==0 ? 0 : !strcmp("300", ev[0]) ? 300 : !strcmp("600", ev[0]) ? 600 : 0;
 		char temp[30];
 		snprintf(temp, 30, "./%d.jpg", time(NULL));
-		name = ec>1 ? ev[1] : ec>0 ? ev[0] : temp;
-		buf = scan(host, port, dpi, NULL, jpeg);
-		printf("%s\n", buf);
+		name = ec>1 ? ev[1] : ec>0 && dpi==0 ? ev[0] : temp;
+		buf = s400w_scan(&s400w, dpi && canDoDPI(&s400w) ? 0 : dpi, NULL, jpeg);
+		printf("result: %s\n", buf);
+		if ( buf==S400W_SCAN_READY ) ret = 00;
 	}
-	return 0;
+	return ret;
 }
 
 
 int main(int argc, char *argv[])
 {
 	int ret = 0;
+	printf("s400w command line scanner v%s by bastel\n", S400W_LIB_VERSION); 
 	if ( argc<4 ) {
 		printf("usage : %s <host> <port> <command> <options>\n"
 			"command:\n"
@@ -155,10 +172,9 @@ int main(int argc, char *argv[])
 			"  status\n"
 			"  clean - use the cleaning sheet\n"
 			"  calibrate - use the calibration sheet\n"
-			"  dpi <300 | 600>\n"
+			"  dpi <300|600>\n"
 			"  preview [filename]\n"
-			"  scan [filename]\n"
-			"  scan <dpi300 | dpi600> <filename>\n"
+			"  scan [300|600] [filename]\n"
 			, argv[0]);
 		return -1;
 	}

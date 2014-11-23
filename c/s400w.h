@@ -3,132 +3,154 @@
 
 /* This file is licensed under Creative Commons License CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
  *
- * Created 2014-11-16 by bastel.
+ * Created 2014-11-22 by bastel.
  *
  * Implements a low level interface to the Mustek(tm) S400W iScanAir(R) scanner.
  *
  * This is a clean room implementation based on written down specs (see commands.txt)
  * and does not contain any code by mustek. Using simple c and non blocking I/O,
  * it's easy to understand, clean and easily portable to other programming languages.
+ * It is not thread safe, but only needs a little ram (around 64k kiB for scanning).
  *
  * Scanner related methods usually return a byte array containing the scanner's response. Please be aware
  * that the response array is not a copy and not constant for unknown responses but will be altered on the next
  * call to any scanner related method. Do not store it 'for later'.
  * Returned known responses are mapped to their static equivalent and can be stored and compared with <code>==</code>.
- * This also means that this class is not thread safe, but only needs a little ram (around 32 kiB).
- * 
- * This library is licensed under the Creative Commons License CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
  *
- * @author bastel
+ *
+ * This library is licensed under the Creative Commons License CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
  */
-
 
 /** Version */
 extern const char* S400W_LIB_VERSION;
 
 /** Firmware version necessary to set (higher) resolution. */
-extern const int MIN_SET_RESOLUTION_FW;
-	
-// Responses (note that no response starts with another response, so no terminating character necessary)
+extern const int S400W_MIN_SET_RESOLUTION_FW;
+
+
+/** S400W control object */
+struct S400W {
+	/* Scanner's address */
+	const char* hostname;
+	int port;
+	/* Function to receive debug information, level is -1 = error, 0 = info, 1 = debug, 2 = verbose */
+	void (*message)(int level, const char* message);
+	/* Timeouts in milliseconds. */
+	struct {
+		/** Timeout for normal responses. */
+		long normal;
+		/** Timeout for receiving preview / jpeg data. */
+		long data;
+		/** Timeout for receiving jpegsize response after preview. */
+		long jpeg_size;
+		/** Timeout for receiving jpegsize response w/o preview. */
+		long jpeg_only;
+	} timeout;
+	/* Internal buffer for responses to return to caller. */
+	char buffer[16];
+	/* Safety net for string routines. */
+	char end;
+};
+
 /** Response: Device busy */
-extern const char DEVICE_BUSY[];
+extern const char S400W_DEVICE_BUSY[];
 
 /** Response: Battery low */
-extern const char BATTERY_LOW[];
+extern const char S400W_BATTERY_LOW[];
 
 /** Response: No paper inserted */
-extern const char NOPAPER[];
+extern const char S400W_NO_PAPER[];
 
 /** Response: Paper inserted, ready to scan, calibrate, clean */
-extern const char SCAN_READY[];
+extern const char S400W_SCAN_READY[];
 
 /** Response: Calibration has started */
-extern const char CALIBRATE_GO[];
+extern const char S400W_CALIBRATE_GO[];
 
 /** Response: Calibration has finished */
-extern const char CALIBRATE_END[];
+extern const char S400W_CALIBRATE_END[];
 
 /** Response: Cleaning has started */
-extern const char CLEAN_GO[];
+extern const char S400W_CLEAN_GO[];
 
 /** Response: Cleaning has finished */
-extern const char CLEAN_END[];
+extern const char S400W_CLEAN_END[];
 
 /** Response: Standard DPI selected */
-extern const char DPI_STANDARD[];
+extern const char S400W_DPI_STANDARD[];
 
 /** Response: High DPI selected */
-extern const char DPI_HIGH[];
+extern const char S400W_DPI_HIGH[];
 
 /** Response: Scanning has started */
-extern const char SCAN_GO[];
+extern const char S400W_SCAN_GO[];
 
 /** Response: Preview data in stream end marker */
-extern const char PREVIEW_END[];
+extern const char S400W_PREVIEW_END[];
 
 /** Response: JPEG size */
-extern const char JPEG_SIZE[];
+extern const char S400W_JPEG_SIZE[];
 
 /** Artifical response: EOF */
-extern const char SEOF[];
-
-/** Artifical response: EOF */
-extern const char SERR[];
-
-
-extern int isKnownResponse(const char* response);
+extern const char S400W_EOF[];
 
 
 /* Notifies clients of preview data, end of preview data, jpeg size, jpeg data, and end of jpeg data.
- * Note: EOF for jpeg is guaranteed to be called if jpeg size has been given (as to close file handles etc).
- * 
- * data: either an array of bytes with preview or jpeg data, SEOF if end of preview/jpeg data,
- *       or JPEG_SIZE for jpeg size.
- * offset: the offset inside the given array if not SEOF or size.
- * length: number of bytes to read from data or jpeg size of data is JPEG_SIZE.
+ * Note: S400W_EOF for jpeg is guaranteed to be called if jpeg size has been given (as to close file handles etc).
  *
- * Returns <=0 to abort receiving, 1 otherwise. (negative values indicate error condition)
+ * data: either an array of bytes with preview or jpeg data, S400W_EOF if end of preview/jpeg data,
+ *       or S400W_JPEG_SIZE for jpeg size.
+ * length: number of bytes to read from data or jpeg size of data is S400W_JPEG_SIZE.
+ *
+ * Returns a value !=0 to abort receiving (negative values indicate error condition).
  */
-typedef int (*receiveFunc)(const char* data, int offset, int length);
+typedef int (*s400w_receiveFunc)(const char* data, int length);
 
 
-/* Reads the scanner's version. Returns a version string, SEOF, or NULL if timeout. */
-extern const char* getVersion(const char* host, int port);
+/* Initializes a S400W object */
+extern void s400w_init(struct S400W* s400w, const char* hostname, int port, void (*message)(int, const char*));
 
-/* Reads scanner's current status. Returns response, SEOF, or NULL if timeout. */
-extern const char* getStatus(const char* host, int port);
 
-/* Sets the scanner's resolution if supported (see MIN_SET_RESOLUTION_FW).
+/* Returns 1 if the given response is one of the defined response constants, except S400W_EOF.
+ * Returns 0 otherwise. */
+extern int s400w_is_known_response(const char* response);
+
+
+/* Reads the scanner's version. Returns a version string, S400W_EOF, or NULL if timeout. */
+extern const char* s400w_get_version(struct S400W* s400w);
+
+
+/* Reads scanner's current status. Returns response, S400W_EOF, or NULL if timeout. */
+extern const char* s400w_get_status(struct S400W* s400w);
+
+/* Sets the scanner's resolution if supported (see S400W_MIN_SET_RESOLUTION_FW).
  * Supported DPI settings: 300 or 600.
- * Returns 1 if the resolution change was successful, 0 otherwise.
+ * Returns 0 if the resolution change was successful, -1 otherwise.
  */
-extern int setResolution(const char* host, int port, int dpi);
+extern int s400w_set_resolution(struct S400W* s400w, int dpi);
 
 
 /* Executes the scanner's cleaning routine.
- * Returns CLEAN_END if sucessfully finished, any other otherwise, 
- * including SEOF or NULL for timeouts. NOPAPER if cleaning sheet is not inserted.
+ * Returns S400W_CLEAN_END if sucessfully finished, any other otherwise,
+ * including S400W_EOF or NULL for timeouts. S400W_NO_PAPER if cleaning sheet is not inserted.
  */
-extern const char* clean(const char* host, int port);
+extern const char* s400w_clean(struct S400W* s400w);
 
 
 /* Executes the scanner's calibration routine.
- * Returns CALIBRATE_END if sucessfully finished, any other otherwise
- * including SEOF or NULL for timeouts. NOPAPER if calibration sheet is not inserted.
+ * Returns S400W_CALIBRATE_END if sucessfully finished, any other otherwise
+ * including S400W_EOF or NULL for timeouts. S400W_NO_PAPER if calibration sheet is not inserted.
  */
-extern const char* calibrate(const char* host, int port);
+extern const char* s400w_calibrate(struct S400W* s400w);
 
 
 /* Executes the scanner's scanning procedure.
  * resolution: resolution setting, or <code>0</code> if no setting is supported / desired
  * preview: callback handler for preview data, or <code>null</code> if no preview should be read
  * jpeg: callback handler for jpeg data
- * Returns SCAN_READY if sucessfully finished, any other response otherwise, including SEOF or NULL for timeouts.
+ * Returns S400W_SCAN_READY if sucessfully finished, any other response otherwise, including S400W_EOF or NULL for timeouts.
  */
-extern const char* scan(const char* host, int port, int resolution, receiveFunc previewFunc, receiveFunc jpegFunc);
+extern const char* s400w_scan(struct S400W* s400w, int resolution, s400w_receiveFunc previewFunc, s400w_receiveFunc jpegFunc);
 
-
-/** For debugging assign printf or your own function. */
-extern int (*S400W_DEBUG)(const char* format, ...);
 
 #endif
