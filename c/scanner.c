@@ -155,7 +155,27 @@ static int process(int argc, char *argv[])
 		name = ec>1 ? ev[1] : ec>0 && dpi==0 ? ev[0] : temp;
 		buf = s400w_scan(&s400w, dpi && canDoDPI(&s400w) ? 0 : dpi, NULL, jpeg);
 		printf("result: %s\n", buf);
-		if ( buf==S400W_SCAN_READY ) ret = 00;
+		if ( buf==S400W_SCAN_READY ) ret = 0;
+	}
+
+	else if ( !strcmp("probe", cmd) ) {
+		int skip = 0;
+		int known[] = { 0x10002000, 0x10203040, 0x30004000, 0x30304040,
+			0x50006000, 0x50607080, 0x70008000, 0x70708080, 0xa000b000, 0xc000d000, 0xe000f000, 0 };
+		if ( ec>0 ) sscanf(ev[0], "%x", &skip);
+		printf("probing @ %08x\n", skip);
+		s400w_probe(&s400w, skip, known);
+		ret = 0;
+	}
+
+	else if ( !strcmp("raw", cmd) ) {
+		if ( ec>0 ) {
+			int command;
+			sscanf(ev[0], "%x", &command);
+			printf("raw: %08x\n", command);
+			s400w_raw_command(&s400w, command);
+			ret = 0;
+		}
 	}
 	return ret;
 }
@@ -175,6 +195,8 @@ int main(int argc, char *argv[])
 			"  dpi <300|600>\n"
 			"  preview [filename]\n"
 			"  scan [300|600] [filename]\n"
+			"  probe [start] - try all commands\n"
+			"  raw <command> - raw command\n"
 			, argv[0]);
 		return -1;
 	}
