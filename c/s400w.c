@@ -284,6 +284,80 @@ int s400w_is_known_response(const char* response)
 }
 
 
+const char* s400w_probe(struct S400W* s400w, int skip, int* known)
+{
+	int fd = openSocket(s400w);
+	if ( fd>0 ) {
+		int i1, i2, i3, i4;
+		for ( i1 = 1; i1<16; i1++ ) {
+			for ( i2 = 0; i2<16; i2++ ) {
+				for ( i3 = 0; i3<16; i3++ ) {
+					for ( i4 = 0; i4<16; i4++ ) {
+						unsigned int command = i1<<28 | i2<<20 | i3<<12 | i4<<4;
+						const char* response = S400W_EOF;
+						char cmd[4] = { (char)(command & 0xff), (char)((command >> 8) & 0xff), (char)((command >> 16) & 0xff), (char)((command >> 24) & 0xff) };
+						int* i = known;
+						if ( i4==0 && i3==0 ) _log(s400w, 1, "probe(%08x)", command);
+						if ( command<(unsigned int)skip ) continue;
+						while ( *i && *i!=command ) i++;
+						if ( *i ) {
+							_log(s400w, 1, "probe(%08x): known command", command);
+						} else {
+							if ( sendCommand(s400w, fd, cmd)<=0 ) {
+								_log(s400w, -1, "probe(%08x): can't send. reconnecting", command);
+								closesocket(fd);
+								fd = openSocket(s400w);
+								if ( fd<=0 ) {
+									_log(s400w, -1, "probe(%08x): can't connect", command);
+									return response;
+								}
+								if (  sendCommand(s400w, fd, cmd)<=0 ) {
+									_log(s400w, -1, "probe(%08x): can't send. giving up", command);
+									closesocket(fd);
+									return response;
+								}
+								mssleep(200);
+							}
+							response = readResponse(s400w, fd, 1000);
+							if ( response ) {
+								_log(s400w, 1, "probe(%08x): %s", command, response);
+								closesocket(fd);
+								fd = openSocket(s400w);
+							}
+						} 
+					}
+				}
+				closesocket(fd);
+				fd = openSocket(s400w);
+			}
+		}
+		closesocket(fd);
+	}
+	return S400W_EOF;
+}
+
+
+const char* s400w_raw_command(struct S400W* s400w, int command)
+{
+	const char* response = S400W_EOF;
+	int fd = openSocket(s400w);
+	if ( fd>0 ) {
+		char cmd[] = {
+			(char)(command & 0xff),
+			(char)((command >> 8) & 0xff),
+			(char)((command >> 16) & 0xff),
+			(char)((command >> 24) & 0xff)
+		};
+		if ( sendCommand(s400w, fd, cmd)>0 ) {
+			response = readResponse(s400w, fd, 1000);
+			_log(s400w, 1, "raw(): %s", response);
+		}
+		closesocket(fd);
+	}
+	return response;
+}
+
+
 const char* s400w_get_version(struct S400W* s400w)
 {
 	const char* response = S400W_EOF;

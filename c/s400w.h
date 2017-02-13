@@ -116,6 +116,14 @@ extern void s400w_init(struct S400W* s400w, const char* hostname, int port, void
 extern int s400w_is_known_response(const char* response);
 
 
+/* ??? */
+extern const char* s400w_probe(struct S400W* s400w, int skip, int* known);
+
+
+/* ??? */
+extern const char* s400w_raw_command(struct S400W* s400w, int command);
+
+
 /* Reads the scanner's version. Returns a version string, S400W_EOF, or NULL if timeout. */
 extern const char* s400w_get_version(struct S400W* s400w);
 
