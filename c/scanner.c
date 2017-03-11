@@ -111,7 +111,19 @@ static int process(int argc, char *argv[])
 
 	s400w_init(&s400w, argv[1], atoi(argv[2]), &debug);
 
-	if ( !strcmp("version", cmd) ) {
+	if ( !strcmp("poweroff", cmd) ) {
+		buf = s400w_power_off(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf!=NULL && buf!=S400W_EOF && !s400w_is_known_response(buf) ) ret = 0;
+	}
+
+	else if ( !strcmp("battery", cmd) ) {
+		buf = s400w_get_battery_state(&s400w);
+		printf("result: %s\n", buf);
+		if ( buf!=NULL && buf!=S400W_EOF && !s400w_is_known_response(buf) ) ret = 0;
+	}
+
+	else if ( !strcmp("version", cmd) ) {
 		buf = s400w_get_version(&s400w);
 		printf("result: %s\n", buf);
 		if ( buf!=NULL && buf!=S400W_EOF && !s400w_is_known_response(buf) ) ret = 0;
@@ -158,9 +170,19 @@ static int process(int argc, char *argv[])
 		if ( buf==S400W_SCAN_READY ) ret = 0;
 	}
 
+	else if ( !strcmp("something", cmd) ) {
+		char temp[0x10000];
+		size_t i = 0;
+		FILE* in = ec==0 ? stdin : fopen(ev[0], "r");
+		i = fread(temp, 1, 0x10000, in);
+		buf = s400w_something(&s400w, temp, i);
+		printf("result: %s\n", buf);
+		if ( buf!=NULL && buf!=S400W_EOF && !s400w_is_known_response(buf) ) ret = 0;
+	}
+
 	else if ( !strcmp("probe", cmd) ) {
 		int skip = 0;
-		int known[] = { 0x10002000, 0x10203040, 0x30004000, 0x30304040,
+		int known[] = { 0x10002000, 0x10203040, 0x20203030, 0x30004000, 0x30304040, 0x40405050,
 			0x50006000, 0x50607080, 0x70008000, 0x70708080, 0xa000b000, 0xc000d000, 0xe000f000, 0 };
 		if ( ec>0 ) sscanf(ev[0], "%x", &skip);
 		printf("probing @ %08x\n", skip);
@@ -188,6 +210,8 @@ int main(int argc, char *argv[])
 	if ( argc<4 ) {
 		printf("usage : %s <host> <port> <command> <options>\n"
 			"command:\n"
+			"  poweroff\n"
+			"  battery\n"
 			"  version\n"
 			"  status\n"
 			"  clean - use the cleaning sheet\n"
@@ -195,6 +219,7 @@ int main(int argc, char *argv[])
 			"  dpi <300|600>\n"
 			"  preview [filename]\n"
 			"  scan [300|600] [filename]\n"
+			"  something [data] - something\n"
 			"  probe [start] - try all commands\n"
 			"  raw <command> - raw command\n"
 			, argv[0]);
