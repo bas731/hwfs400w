@@ -116,14 +116,6 @@ extern void s400w_init(struct S400W* s400w, const char* hostname, int port, void
 extern int s400w_is_known_response(const char* response);
 
 
-/* ??? */
-extern const char* s400w_probe(struct S400W* s400w, int skip, int* known);
-
-
-/* ??? */
-extern const char* s400w_raw_command(struct S400W* s400w, int command);
-
-
 /* Reads the scanner's version. Returns a version string, S400W_EOF, or NULL if timeout. */
 extern const char* s400w_get_version(struct S400W* s400w);
 
@@ -159,6 +151,27 @@ extern const char* s400w_calibrate(struct S400W* s400w);
  * Returns S400W_SCAN_READY if sucessfully finished, any other response otherwise, including S400W_EOF or NULL for timeouts.
  */
 extern const char* s400w_scan(struct S400W* s400w, int resolution, s400w_receiveFunc previewFunc, s400w_receiveFunc jpegFunc);
+
+
+/* sends a raw command */
+extern const char* s400w_raw_command(struct S400W* s400w, int command);
+
+
+/* probes all commands */
+extern const char* s400w_probe(struct S400W* s400w, int skip, int* known);
+
+
+/* unoffcial */
+extern const char* s400w_power_off(struct S400W* s400w);
+
+
+/* unoffcial */
+extern const char* s400w_get_battery_state(struct S400W* s400w);
+
+
+/* unoffcial */
+extern const char* s400w_something(struct S400W* s400w, char* data, size_t size);
+
 
 
 #endif
