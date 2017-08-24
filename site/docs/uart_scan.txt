@@ -1,0 +1,331 @@
+Mustek test tcp connect port 23
+
+FW Version=IO0a.032
+CsrTcpTelnetIpSocketTcpCloseIndHandler Closed server socket handle
+
+Mustek test tcp connect port 23
+
+Wifi: receive DevStatus CMD
+
+Wifi Scan Ready
+
+StringCmd=scanready  9
+
+send length=11
+res_300
+Load 300 dpi Shading from Pstore.
+
+ ReCalShadingBufOffset revirse S415
+
+StringCmd=dpistd  6
+
+send length=11
+
+Wifi: receive Scan CMD
+
+Wifi: scan task Ready
+
+StringCmd=scango  6
+
+send length=11
+m_FirsScantCommand: SCAN_FIRST
+JobNew_Debug JobNew  <<..\scan\fs\fsscncmd.c  ==  1270>>
+JobPermissionToStart<Scan to Host>
+JobPermissionToStart: GRANTED
+
+-----------------------------
+  Starting Scan-to-Host Job
+-----------------------------
+
+IPMemInit
+Color Auto Image Mode
+Color table listindex=4 index=16 app=0 button=0 head=1 qual=1 media=0
+listindex=4  [ZRN]Using 8-bit Printer LUTs
+scaleupx = 1 scaleupy = 1
+AFTER: scaleupx = 1 scaleupy = 1
+Halftone Mode either not set or incompatible with this output 8-bit depth
+OUTCROP: Mode=0 LOC=0 ROC=0 .....LOC=0 ROC=0 ScW=2560 AdjSnkW=2560
+SCANNER  SCN2HST
+Width           : 2560   Width           : 2560
+Length          : 4800   Length          : 4800
+BitsPerSample   : 16     BitsPerSample   :  8
+SamplesPerPixel :  3     SamplesPerPixel :  3
+
+ColorScan ipDetails QA Dump:
+InResX               :  300.
+InResY               :  300.
+PrintResX            :  300.
+PrintResY            :  300.
+HScale               : 1000.
+VScale               : 1000.
+CMYScaleUpX          :    1.
+PhotoScaleUpX        :    1.
+ScaleUpY             :    1.
+
+Src Dimensions (hxw) : 2560 x 4800
+Snk Dimensions (hxw) : 2560 x 4800
+CropWidth            : 2560.
+ProcInWidth          : 2560.
+ProcOutWidth         : 2560.
+ScaledWidth          : 2560.
+OutPrintWidth        : 2560.
+OutWidth             : 2560.
+
+LeftCrop             :    0.
+RightCrop            :    0.
+TopCrop              :    0.
+BottomCrop           :    0.
+LeftOutCrop          :    0.
+RightOutCrop         :    0.
+OlapMode             :    0.
+
+photoMode            :    0.
+PrintMode            :    0.
+QualityMode          :    1.
+CMYOut               :    0.
+KCMOut               :    0.
+ColPlanes            :    3,
+EdgetoEdge           :    0.
+
+Brightness           :    0.
+Contrast             :    0.
+Background           :    0.
+EdMultLarge          :  256.
+EdMultSmall          :    0.
+EdMultBlack          :  256.
+EdMultDilute         :    0.
+
+Color Scan
+Wifi Thumbnail Band size=7680
+ CsrPmemAvailable=13560316 K
+
+ Wifi Thumbnail RAM limit=12511740 K
+
+Wifi AllocThumbnailBandCnt=305,limit=12511740
+[mAllocWifiThumbnailBuffer] 0x159aec4
+
+Alloc iOS Thumbnail OK!!
+Wifi Jpeg Band size=7680
+ CsrPmemAvailable=11215476 K
+
+ Wifi Jpeg RAM limit=10166900 K
+
+Wifi AllocJpegBandCnt=1323
+
+Wifi AllocJpegBandCnt=1230,limit=10166900
+[mAllocWifiJpegBuffer] 0xaf4c10
+
+Alloc Wifi Jpeg Buffer OK!!
+SCA: ==== QsrcScannerSetup ====
+SCA:   Start @ 0 0
+SCA:   Size: 2560x4800
+SCA:   Resolution: 300x300
+SCA:   Channels: 3
+SCA:   Band Size: 300
+
+ memmgrBytesAvailable=34257632 K
+
+ ScanRAMlimit=32160480 K
+SCA: ==== ScanAllocateResource ====
+SCA:   Bands = 65
+SCA:   Frst band size = 491520
+SCA:   Band size = 491520
+SCA:   Size in lines = 2080
+TaskSemReset - task:0x00293fc8 id:37 status:0x00 current:95
+TaskSemReset - task:0x00293fc8 id:37 status:0x00 new_current:2079
+TaskSemReset - task:0x00293fc8 id:38 status:0x00 current:0
+TaskSemReset - task:0x00293fc8 id:38 status:0x00 new_current:0
+TaskSemReset - task:0x00293fc8 id:39 status:0x00 current:0
+TaskSemReset - task:0x00293fc8 id:39 status:0x00 new_current:0
+init S415 Sensor timing....
+
+nMaxWidth=2560
+
+nActivePixel=2592
+
+ScanResXIndex=1
+
+ 300DPI g_CIS_CLK_Timer.cycle=2887
+
+Ledcyclelength.R_Hpluse[RES_600]= 1705
+
+Ledcyclelength.G_Hpluse[RES_600]= 2125
+
+Ledcyclelength.B_Hpluse[RES_600]= 755
+
+Ledcyclelength.R_Hpluse[RES_300]= 877
+
+Ledcyclelength.G_Hpluse[RES_300]= 1087
+
+Ledcyclelength.B_Hpluse[RES_300]= 387
+
+ AFE_OFFSET=0
+CIS_TIME_INTEGRATION = 807000
+scan_time = 63887
+Velocity = 15972
+SCA: Speed Table = 33000 25099 19521 17002 15972
+SCA: Speed Difference Table = 204 144 66 27
+SCA: Ramp down steps = 160
+
+***Button loop*****
+SCAN GO Finish
+ScanFinish=1
+ScanProfile.ScanLines=1268
+ScannedLines=3804
+SCA: Speed Table = 33000 25099 19521 17002 15972
+SCA: Speed Difference Table = 204 144 66 27
+SCA: Ramp down steps = 160
+
+ AFE_OFFSET=0
+lines_remained=3532 ,returnedLines=3804
+ScanDriver Finish,lines_remained=0
+SCA: DMA on Steps=38272
+SCA: Back Tracking Count = 0
+
+EndIdx=79
+Color Scan
+FreeListDestroy 0x3DD2000 with 16 items.
+[ColorScanOuter] BigLossyJpegTotalLines: 1268, 1268
+[ColorScanOuter] g_CropRect Info(T,L,B,R): 48, 1896, 1009, 2544
+[ColorScanOuter] CropInfo(T,L,B,R): 48, 1904, 259, 16
+TaskSemReset - task:0x00293fc8 id:37 status:0x00 current:2079
+TaskSemReset - task:0x00293fc8 id:37 status:0x00 new_current:2079
+TaskSemReset - task:0x00293fc8 id:38 status:0x00 current:0
+TaskSemReset - task:0x00293fc8 id:38 status:0x00 new_current:0
+SET DMA FINISH
+ScannerOnScan, 536
+ScannerOnScan, 539
+ScannerOnScan, 542
+ScannerOnScan, 546
+GET DMA FINISH
+croppedwidth=640, croppedheight=961, croptop=48, cropbottom=259, cropleft=1904, cropright=16
+SizeSpec->XRes=300, SizeSpec->YRes=300
+jpeg_set_image(3dd2000, w 640, h 961, s 640)
+jpeg_set_selection(3dd2000, t 48, l 1904, b 1008, r 2543)
+jpeg_set_rotation(3dd2000, t 0)
+*** Brightness = 0
+jpeg_setup_pipe: init decoder
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+valid JPEG TYPE
+jpeg_setup_pipe: init colorspace
+wnputWidth=2560, left=1904, right=2543, top=48, bottom=1008
+jpeg_convert_selection_to_crops t 48, l 1904, b 259, r 16
+in = 640 out = 640  padin=640  padout=640  scaled=640
+padin 640, padout 640, finalout 640, hscl 1000
+Extra bottom Crop (in Non-Rotate mode) = 4
+outWidth=640  OutLength=961
+
+JPEG_4_2_2 Image, Width : 2560, Length : 1268
+
+JPEG Decode Pipeline ipDetails QA Dump:
+InResX               :    0.
+InResY               :    0.
+PrintResX            :    0.
+PrintResY            :    0.
+HScale               : 1000.
+VScale               : 1011.
+CMYScaleUpX          :    0.
+PhotoScaleUpX        :    0.
+ScaleUpY             :    0.
+
+Src Dimensions (hxw) : 2560 x  951
+Snk Dimensions (hxw) :  640 x  961
+CropWidth            :  640.
+ProcInWidth          :  640.
+ProcOutWidth         :  640.
+ScaledWidth          :  640.
+OutPrintWidth        :  640.
+OutWidth             :  640.
+
+LeftCrop             : 1904.
+RightCrop            :   16.
+TopCrop              :   48.
+BottomCrop           :  263.
+LeftOutCrop          :    0.
+RightOutCrop         :    0.
+OlapMode             :    0.
+
+photoMode            :    0.
+PrintMode            :    0.
+QualityMode          :    0.
+CMYOut               :    0.
+KCMOut               :    0.
+ColPlanes            :    0,
+EdgetoEdge           :    0.
+
+Brightness           :    0.
+Contrast             :    0.
+Background           :    0.
+EdMultLarge          :    0.
+EdMultSmall          :    0.
+EdMultBlack          :    0.
+EdMultDilute         :    0.
+jpeg_setup_pipe: Jpeg2YCCInit
+
+JPEG to YCC
+
+JPEG2YCC: Rotation is 0 and mcus per list entry is 8 using IJAC.
+Src Width : 2560(pixels), Src Length:  961(pixels)
+IPDGetBandSize:    8
+IPDGetOutWidth:  640
+JPEG to YCC
+..\algorithms\la7\pipes\scan2host\colorscanouter.c(3767) WriteToSDCard info
+TotalJPEGSize = 88431, width=640, height=961
+TotalThumbnailSize = 0, width=0, height=0
+Window x,y,w,h = 0 0 0 0
+RGB thumbnail w, h = 0 0
+RGB crop top, bottom, left, right = 0 0 0 0
+reading 0 writing 1 append 0
+fx_open: error cannot get current media
+SizeSpec->XRes=300, SizeSpec->YRes=300
+
+****Jpeg File Size: header=0x02e7,data=0x1596f,totalSize=0x15c56*****
+
+wNum=0 , pDataMove=6937
+
+Jpeg lastdata=4694
+
+lastNum=11 , pDataMove=83737 ,lastdata=4694
+ starttime=185499, endtime=185629, 185652
+Auto crop processing in 0.130 s
+Write to SD card in 0.23 s
+Total processing in 0.153 s
+IPMemDeinit
+IPMemDeinit: work around leaked pointer 4: 1b80260
+
+-----------------------------
+  Scan-to-Host Job Finished
+-----------------------------
+
+
+Send Jpeg Size
+
+ Jpeg Size=89174
+
+ Start Send Jpeg File
+
+[File]Wifi JpegBuffer Idx[11] Send out,Size=4694
+
+[File]Send End TagIfo
+
+mReleaseWifiThumbnailBuffer OK!!!
+
+ CsrPmemAvailable=4196480 K
+
+mReleaseWifiJpegBuffer OK!!!
+
+ CsrPmemAvailable=13560464 K
+Load 300 dpi Shading from Pstore.
+
+ ReCalShadingBufOffset revirse S415
+CsrTcpTelnetIpSocketTcpCloseIndHandler Closed server socket handle
+SCA: Speed Table = 15972 15972 15972 15972 15972
+SCA: Speed Difference Table = 0 0 0 0
+SCA: Ramp down steps = 0
+

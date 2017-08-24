@@ -146,34 +146,12 @@ Example: How to get a 300 DPI scan
 - read jpeg data
 
 
+Other commands (all combinations with the even digit being 0 have been probed by me):
+40405050 WifiBattery State ~0x287 or 0x284 or so = usb power, ~0x240 = battery full?
+30004000 something
+70008000 DevpowerOff
 
-00001010 ?
-10102020 ?
-40405050 ?
-50506060 ?
-60607070 ?
-80809090 ?
-9090a0a0 ?
-a0a0b0b0 ?
-b0b0c0c0 ?
-c0c0d0d0 ?
-d0d0e0e0 ?
-e0e0f0f0 ?
-
-00001000 ?
-20003000 ?
-30004000 ?
-40005000 ?
-60007000 ?
-70008000 ?
-80009000 ?
-9000a000 ?
-b000c000 ?
-d000e000 ?
-
-
-
-90a0b0c0 ?
-a0b0c0d0 ?
-b0c0d0e0 ?
-c0d0e0f0 ?
+UART
+TP26 = UART receive
+TP25 = UART transmit
+57600,8,n,1,xon/xoff

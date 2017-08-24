@@ -7,7 +7,7 @@
 	<title>Mustek S400W iScan Air / ion Air Copy [+E-Post Edition] / Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー / HALO Wireless Portable Scanner</title>
 </head>
 <body>
-<p>Last Update: 2014-11-23: released c source code + binaries</p>
+<p>Last Update: 2017-08-24: updated information</p>
 
 <h1 class="first">Mustek S400W iScan Air</h1> 
 
@@ -27,7 +27,7 @@
 <p>While it is well suited for what it is advertised for - easily scan a document on the go with your tablet or phone
 	(especially if you don't have some kind of 'camera scanner' software or the camera of your tablet / phone has
 	a too low resolution) - the low prices it is sold for warrant a much better usage model. (I did get one for my mom, though ;)
-	<a href="docflow.html">Connect it to a server and automatically scan, ocr, pdf, and index documents.</a>
+	<a href="wlan.html">Connect it to a server</a> and <a href="docflow.html">automatically scan, ocr, pdf, and index documents.</a>
 </p>
 
 <h1><a name="s1">1</a> The Scanner</h1> 
@@ -66,6 +66,13 @@
 
 <h2><a name="s1.2">1.2</a> Pictures / Data</h2>
 
+<ul>
+	<li><a href="http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275">http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275</a></li>
+	<li><a href="images/img_1290.jpg">Bottom</a></li>
+	<li><a href="images/img_1291.jpg">Inside</a></li>
+	<li><a href="images/img_1292.jpg">Inside Closeup</a></li>
+</ul>
+
 <p>To open the scanner you need to remove 5 Phillips screws, 4 located beneath the rubber feet, and one beneath the white plug thing in the middle.
 	There is a 6th vicious tri-wing screw beneath the FCC label.
 	Note the smiley drawn with ballpoint pen on mine, some assembly worker knowing the casual hacker will have a nasty surprise here.
@@ -84,12 +91,18 @@
 
 <p>It's also interesting to see that the power button is actually two buttons.</p>
 
+<p>UART is on TP26 = receive and TP25 = transmit. Settings are 57600,8,n,1,xon/xoff for putty.
+	The console is non interactive and there is some interesting info while<p>
 <ul>
-	<li><a href="http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275">http://fccid.net/number.php?fcc=HWFS400W&amp;id=336275</a></li>
-	<li><a href="images/img_1290.jpg">Bottom</a></li>
-	<li><a href="images/img_1291.jpg">Inside</a></li>
-	<li><a href="images/img_1292.jpg">Inside Closeup</a></li>
+	<li><a href="docs/uart_boot.txt">booting</a>,
+	<li><a href="docs/uart_dhcp.txt">connecting</a>, and
+	<li><a href="docs/uart_scan.txt">scanning</a>.
 </ul>
+
+<p>The device seems to have a unpopulated SD card slot right next to the CPU. There is also an unsoldered USB port,
+	if a keyboard is connected to it, then one can press "a" to abort normal booting
+	and an attempt is made to load the firmware from SD card.<p>
+
 
 
 <h2><a name="s1.3">1.3</a> Software</h2>
@@ -283,6 +296,18 @@ read 'jpegsize' &lt;number&gt;
 <dd>wait 500ms<br>
 read $jpegsize &lt;byte&gt;
 </dd>
+</dl>
+
+<p>Unofficial commands:</p>
+<dl>
+<dt><code>40405050</code>: WifiBattery State</dt>
+<dd>~0x287 or 0x284 or so = usb power, ~0x240 = battery full?</dd>
+
+<dt><code>30004000</code>: unknown</dt>
+<dd>seems to expect more data</dd>
+
+<dt><code>70008000</code>: DevpowerOff</dt>
+<dd>Turns of device</dd>
 </dl>
 
 

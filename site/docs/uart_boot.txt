@@ -1,0 +1,186 @@
+----------------------------------------
+MUSTEK Loader Build Date  : 02-Jan-13 14:20
+Physical Memory Size     : 67108352 bytes
+Application Load Address : 0x8D018000
+PLL_GetFrequency returned 210000000
+bottom_of_heap    = 0x00042764
+SystemMemoryStart = 0x00042764
+SystemMemorysize  = 66836124 bytes
+Press 'a' to halt application load from flash
+
+\|/-\|/-\|/-\|/-\|/-\|/-\
+FWSignature 006d2a1b
+FWCmprCodeSize 000f37dc
+FWChecksum 0b1851bb
+FWLength 001792e4
+FWAddress 00000500
+dst_size = 0020D800
+Loader: Loading firmware to RAM address 0x00000500
+g_Is_CIS_DL521_07UHE=0
+*** Get SysSettings: 0, 0, 0
+
+USB Device Prologue
+
+USB Device Scanner
+
+USBH20:  usbh_prolog
+USB2.0 HOST HW RESET
+USB2.0 HOST PORT0: setPORTSCn 0x1000/0x1000
+USB2.0 HOST PORT1: setPORTSCn 0x1000/0x1000
+JOB_MAX=38 dimof(job_type_name)=38
+nBattVolThr[0] = 0x220 
+nBattVolThr[1] = 0x1dd 
+nBattVolThr[2] = 0x1dd 
+nBattVolThr[3] = 0x1d0 
+
+*******************************************
+Firmware build:
+	02001534x60::D:/FD3_SVNTes/work:4.6
+	27-Mar-13 11:31
+	ARMCC Version: 3.0 build 586
+	Standard C Version: 199409
+	Built on: Windows NT 5.1
+Copyright (c) 1996-2006 Express Logic Inc. * ThreadX ARM11/RVDS Version G5.0.5.0 SN: 2049A-099-1301 *
+Copyright (c) 1996-2006 Express Logic Inc. * FileX ARM11/RVDS Version G5.0.5.0 SN: 2049-099-1310 *
+Physical memory size    : 67108864 bytes
+Free memory size        : 59375616 bytes
+Free memory start       : 0x00760000
+CPU Clock Speed         : 210.0 MHz
+DSP Clock Speed         : 210.0 MHz
+System-Bus Clock Speed  : 210.0 MHz
+Quatro/Fire Chip ID     : 4310(D)
+Default System TickRate : 2100000
+*******************************************
+
+
+=================================================
+System Control Coprocessor (CP15) Summary:
+	ARM 926 Architecture 5TEJ
+	D-Cache: 8KB 4-way with 32-byte lines
+	I-Cache: 8KB 4-way with 32-byte lines
+	D-TCM Present
+	I-TCM Present
+	Cache Replacement Strategy: Random
+	I-Cache: enabled
+	D-Cache: enabled
+	MMU:     enabled
+=================================================
+
+DSPITF: DSP0 ISRs Inited...
+RTC_Prologue: Real-Time Clock is not running
+Installing Memory card support
+AppInitTask: TestTaskProlog
+
+211d68: ****DSP0 RESET Properly!
+
+
+USB2.0 HOST READY
+USB2.0 HOST MSC TASK READY
+Watchdog Timer NOT Enabled
+Starting test task
+SDIO card Initialized!!
+Clock running at MAX speed possible!!
+CsrSchedFwTaskInit LINE:69
+CsrSchedFwTaskInit LINE:69
+Initialize Synergy WiFi
+Synergy_WMA_Task: Turn on WiFi
+
+Mustek Wifi Task Run!!
+
+
+======================================================
+	Uart Command Task
+
+======================================================
+
+> init S415 Sensor timing....
+
+nMaxWidth=2560
+
+nActivePixel=2592
+
+ScanResXIndex=1
+
+ 300DPI g_CIS_CLK_Timer.cycle=2887 
+
+Ledcyclelength.R_Hpluse[RES_600]= 0
+
+Ledcyclelength.G_Hpluse[RES_600]= 0
+
+Ledcyclelength.B_Hpluse[RES_600]= 0
+
+Ledcyclelength.R_Hpluse[RES_300]= 0
+
+Ledcyclelength.G_Hpluse[RES_300]= 0
+
+Ledcyclelength.B_Hpluse[RES_300]= 0
+*** Get SysSettings: 0, 0, 0
+
+ g_CIS_CLK_Timer.cycle=2887 
+Load 300 dpi Shading from Pstore.
+
+ ReCalShadingBufOffset revirse S415 
+
+ AFE_OFFSET=0  
+igmp_mac_filter LINE:111
+CsrIpEtherIfAddReqHandler LINE:344
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler LINE:79
+Synergy WiFi On successfully
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+Synergy_WMA_Task: Configure to WiFi Direct
+Get MAC address: 00:11:f6:a9:b5:d5
+
+ MAC Address=ABCDEFDIRECT-_AirCopyjpegend 
+
+SsIDString=DIRECT-ABCDEF_AirCopy
+Start TelnetSrv
+CsrWifiDemoBootSetNmeWifiDirectAutoGoProfile
+CsrWifiHipVifModeSetReq: mode 6 -> 0
+resetStationRecordList: interfacemode is INVALID
+CsrWifiHipVifModeSetReq: mode 7 -> 6
+igmp_mac_filter LINE:111
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler LINE:79
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+CsrWifiHipVifModeSetReq: mode 7 -> 7
+igmp_mac_filter LINE:111
+CsrIpEtherIfAddReqHandler LINE:344
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler LINE:79
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+
+MUSTEK: SDIO CLK Set unifi_set_host_state LINE:4013
+netifStateChange LINE:223
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler LINE:79
+netifStateChange LINE:223
+CsrWifiDemoBootCsrIpIfconfigUpCfmHandler LINE:175
+CsrDhcpServerCreateHandler LINE:48
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler
+CsrWifiDemoBootCsrIpIfconfigUpdateIndHandler LINE:79
+CsrDhcpServerIpSocketOptionsHandler LINE:465
+CsrDhcpServerIpSocketOptionsHandler LINE:469
+CsrDhcpServerStartHandler LINE:131
+WFD PBC is ready
