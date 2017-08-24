@@ -1,0 +1,50 @@
+nme_ap_manager_connect_start_ind LINE:739
+nme_ap_manager_connect_cfm (CSR_WIFI_SME_MEDIA_STATUS_CONNECTED == req->mediaStatus)
+(cfm->status == CSR_RESULT_SUCCESS)
+nme_ap_manager_sta_cfm LINE:600
+
+pFsmData->staConnected=1 
+CsrDhcpServerHandler LINE:179
+CsrDhcpServerIpSocketUdpDataIndHandler LINE:439
+csrDhcpServerMessageHandler LINE:404
+CsrDhcpServerHandleMessage LINE:1928
+csrDhcpServerGetClientInfoFromOptions LINE:883
+csrDhcpServerHandleOptionRequestedIpAddress LINE:830
+info->requestedIpAddress[0] = 192
+info->requestedIpAddress[1] = 168
+info->requestedIpAddress[2] = 18
+info->requestedIpAddress[3] = 1
+csrDhcpServerMessageNakSend LINE:1068
+CsrDhcpServerMessageSend LINE:967
+CsrDhcpServerHandleMessage LINE:1930
+
+ DHCP Client Connect
+CsrDhcpServerIpSocketUdpDataHandler LINE:517
+CsrDhcpServerHandler LINE:179
+CsrDhcpServerIpSocketUdpDataIndHandler LINE:439
+csrDhcpServerMessageHandler LINE:404
+CsrDhcpServerHandleMessage LINE:1922
+csrDhcpServerGetClientInfoFromOptions LINE:883
+csrDhcpServerGetIpAddress LINE:219
+csrDhcpServerGetIpAddress LINE:276
+csrDhcpServerIpAddressNotUsedAndValid LINE:162
+csrDhcpServerMessageOfferSend LINE:1059
+csrDhcpServerMessageAckSend LINE:986
+CsrDhcpServerIpSocketUdpDataHandler LINE:517
+CsrDhcpServerHandler LINE:179
+CsrDhcpServerIpSocketUdpDataIndHandler LINE:439
+csrDhcpServerMessageHandler LINE:404
+CsrDhcpServerHandleMessage LINE:1928
+csrDhcpServerGetClientInfoFromOptions LINE:883
+csrDhcpServerHandleOptionRequestedIpAddress LINE:830
+info->requestedIpAddress[0] = 192
+info->requestedIpAddress[1] = 168
+info->requestedIpAddress[2] = 18
+info->requestedIpAddress[3] = 1
+csrDhcpServerGetClientUpdateInfo LINE:148
+csrDhcpServerMessageAckSend LINE:986
+CsrDhcpServerHandleMessage LINE:1930
+
+ DHCP Client Connect
+CsrDhcpServerIpSocketUdpDataHandler LINE:517
+

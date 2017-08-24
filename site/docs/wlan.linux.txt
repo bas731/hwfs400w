@@ -1,26 +1,124 @@
 I am running debian. So apt-get will appear in this document. Your mileage may vary.
+# resoures used:
+# - /usr/share/doc/wpasupplicant/README.Debian.gz
+# - https://ubuntuforums.org/showthread.php?t=1259003
+# - https://manual.siduction.org/inet-wpa
+# - https://unix.stackexchange.com/questions/182967/can-i-prevent-a-default-route-being-added-when-bringing-up-an-interface
+
 
 - get cheap wlan stick with n and WPA2 capability and linux support
 
 - get it to work (see random tutorial on web)
 	- you probably need firmwares (adjust /etc/apt/sources.lst to main non-free contrib):
 		> apt-get install firmware-linux firmware-linux-free firmware-linux-nonfree firmware-ralink 
-	- might also come in handy
-		> apt-get install ifupdown
 	- we need wpasupplicant
-		> apt-get install wpasupplicant  wireless-tools 
+		> apt-get install wpasupplicant
+	- might also come in handy
+		> apt-get install wireless-tools ifupdown
 
-- dhcp is necessary (unfortunately dhcping didn't work) but so if you don't have one:
+- avoid endless waiting at boot
+	> mkdir /etc/systemd/system/networking.service.d
+	> edit /etc/systemd/system/networking.service.d/reduce-timeout.conf
+[Service]
+TimeoutStartSec=60 # or 30
+
+- dhcp is necessary so if you don't have one:
 	> apt-get install dhclient
-	dhclient sucks, since options like -1 do not work, and interfaces in config files are added to command line supplied once, but it's what usually is installed.
+
+- might also come in handy
+	> apg-get install resolvconf	
 
 - /etc/dhcp/dhclient.conf should not have interface entries if you can avoid it (they will be renewed when our wlan connects, not really problem, just annoying)
 
-- if you have dhcp running with a router and you have no resolveconf package installed, you might want to protected /etc/resolv.conf
+- if you have dhcp running with a router and you have no resolvconf package installed, you might want to protected /etc/resolv.conf
 	> chmod +i /etc/resolv.conf
 	if your dhcp client can be configured to not overwrite it, then you don't need it.
-	pump maybe?
-	if you have resolveconf installed then you can also configure it somehow.
+- if you have resolvconf, edit /etc/resolvconf/interface-order and make sure that wlan comes after eth
+	(if you have a bridge setup, e.g. you have more than ethernet port and use it as switch, don't forget to add a br wildcard)
+
+Ok, dhcp and resolving is set up, lets get started with wpa. 
+What we want is to detect a turned on scanner within 30 seconds and if it is turned off, notice that fairly quickly, too.
+So that interfaces and dhcp leases can be removed (dhcp lease time is rather big, but needs to be redone every time we connect to the scanner)
+The older tutorial did this all by hand, but debian has support for this inbuilt (and probably most other distro): wifi roaming!
+I'll append the old script at the end, but it never worked as well as the inbuilt stuff.
+	
+- we assume our wlan is wlan0
+- create /etc/wpa_supplicant/wpa_supplicant.conf if not already there, and edit it
+  alter the ssid to match your DIRECT-<6 digits>-<AirCopy|iScanAir|etc> and country
+# "roaming" config for mustek s400w scanner
+update_config=1
+ctrl_interface=DIR=/run/wpa_supplicant GROUP=netdev
+country=DE
+fast_reauth=1
+eapol_version=1
+ap_scan=1
+filter_ssids=1
+autoscan=periodic:30
+network={
+	id_str="s400w"
+	ssid="DIRECT-ABCDEF_AirCopy"
+	proto=WPA2
+	psk="12345678"
+	ap_max_inactivity=20
+	key_mgmt=WPA-PSK
+	pairwise=CCMP
+	group=CCMP
+	#disabled=1
+}
+
+- protect it
+	> chmod 0600 /etc/wpa_supplicant/wpa_supplicant.conf
+
+- edit /etc/network/interfaces, choose the right driver
+allow-hotplug wlan0
+iface wlan0 inet manual
+        wpa-driver  nl80211,wext
+        wpa-roam    /etc/wpa_supplicant/wpa_supplicant.conf
+
+iface s400w inet dhcp
+
+- protect it
+	> chmod 0600 /etc/network/interfaces
+
+- restart networking and ifup / down wlan0, maybe reboot whatever
+	> ifdown wlan0
+	> /etc/init.d/networking restart
+	> ifup wlan0
+
+- problem 1: wlan0 must not overwrite our default route
+  solution for dhclient is to create a file in /etc/dhcp/dhclient-enter-hooks.d,
+  edit /etc/dhcp/dhclient-enter-hooks.d/s400w
+#!/bin/sh
+## prevent DHCP server on wlan0 from forcing a default route on us
+case "${reason}.${interface}" in
+	RENEW.wlan0|BOUND.wlan0)
+		ip route delete default via $new_routers
+		#new_routers = ""
+		;;
+	*)
+		;;
+esac
+
+- chmod 0644 /etc/dhcp/dhclient-enter-hooks.d/s400w
+
+- problem 2: if somebody fakes being the scanner, the system will happily connect to it and make it vulnerable
+  if you don't have a firewall already, you can use:
+iptables -o wlan0 -A OUTPUT -p all -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+iptables -i wlan0 -A INPUT  -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -i wlan0 -A INPUT  -m conntrack --ctstate INVALID -j DROP
+iptables -i wlan0 -A INPUT  -p udp -j REJECT --reject-with icmp-port-unreachable
+iptables -i wlan0 -A INPUT  -p tcp -j REJECT --reject-with tcp-reset
+iptables -i wlan0 -A INPUT  -j REJECT --reject-with icmp-proto-unreachable
+
+- save it
+	> iptables-save >/etc/iptables.s400w.rules
+- edit /etc/rc.local or so
+/sbin/iptables-restore < /etc/iptables.s400w.rules
+
+
+
+################################################################################################################
+# old stuff
 
 - we assume our wlan is wlan0
 
@@ -32,15 +130,15 @@ iface wlan0 inet static
 		network         192.168.18.0
 		netmask         255.255.255.0
 		broadcast       192.168.18.255
-		wpa-ssid        DIRECT-012345_AirCopy
+		wpa-ssid        DIRECT-ABCDEF_AirCopy
 		wpa-psk         "12345678"
 
 - those static values are dummies, but dhcp will not be able to overwrite them, so they must match dhcp response (should, if no other client is connected to the scanner, sometimes 192.168.18.2 will appear, then we are in trouble)
 
-- protect it
+- protect it 
 	> chmod 600 /etc/network/interfaces
 
-- now we need to start dhclient for wlan0 on connect and kill it on disconnect:
+- now we need to start dhclient for wlan0 on connect and kill it on disconnect:  
 
 - create file /etc/dhcp/dhclient.wpa_cli.sh
 #!/bin/bash
