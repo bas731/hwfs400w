@@ -24,8 +24,9 @@ import java.util.logging.Logger;
  */
 public class Scanner
 {
-	public static void main(final String[] args) throws InterruptedException, IOException
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
+		args = new String[] { "scan" };
 		Handler h = new ConsoleHandler();
 		h.setLevel(Level.FINE);
 		Logger.getLogger(Scanner.class.getPackage().getName()).addHandler(h);
