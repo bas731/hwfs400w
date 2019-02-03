@@ -6,6 +6,7 @@
 package hwfs400w;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -55,7 +56,7 @@ public class S400W
 		 * 
 		 * @param data either an array of bytes with preview or jpeg data, {@link S400W#EOF}
 		 * 		if end of preview/jpeg data, or {@link S400W#JPEG_SIZE} for jpeg size.
-		 * @param offset the offset inside the given array if not EOF or size.
+		 * @param offset the offset inside the given array if not EOF or jpg size.
 		 * @param length number of bytes to read from data or jpeg size of data is {@link S400W#JPEG_SIZE}.
 		 * @return <code>false</code> to abort receiving (not supported yet), <code>true</code> otherwise.
 		 * @throws IOException If something goes wrong while processing the data.
@@ -183,14 +184,13 @@ public class S400W
 	 * 
 	 * @return a version string, {@link #EOF}, or <code>null</code> if timeout
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public byte[] getVersion() throws IOException, InterruptedException
+	public byte[] getVersion() throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(GET_VERSION);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("getVersion", response);
 			return response;
@@ -210,14 +210,13 @@ public class S400W
 	 * 
 	 * @return response, {@link #EOF}, or <code>null</code> if timeout.
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public byte[] getStatus() throws IOException, InterruptedException
+	public byte[] getStatus() throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(GET_STATUS);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("getStatus()", response);
 			return response;
@@ -238,14 +237,13 @@ public class S400W
 	 * @param dpi supported DPI setting: <code>300</code> or <code>600</code>
 	 * @return <code>true</code> if the resolution change was successful.
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public boolean setResolution(int dpi) throws IOException, InterruptedException
+	public boolean setResolution(int dpi) throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(dpi==600 ? SET_DPI_HIGH : SET_DPI_STANDARD);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("setResolution(" + dpi + ")", response);
 			return dpi==600 && response==DPI_HIGH || dpi!=600 && response==DPI_STANDARD;
@@ -264,19 +262,18 @@ public class S400W
 	 * Executes the scanner's cleaning routine.
 	 * <p>
 	 * Timeout to wait for end of cleaning can be set via
-	 * <code>{@link #PROPERTY_KEY}.timeout.clean</code>, default is 30000 ms.
+	 * <code>{@link #PROPERTY_KEY}.timeout.clean</code>, default is 40000 ms.
 	 * 
 	 * @return {@link #CLEAN_END} if sucessfully finished, any other otherwise, 
 	 * 		including {@link #EOF} and <code>null</code> for timeouts, ({@link #NOPAPER} if cleaning sheet is not inserted).
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public byte[] clean() throws IOException, InterruptedException
+	public byte[] clean() throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(GET_STATUS);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("clean().check", response);
 			if ( response!=SCAN_READY ) return response;
@@ -287,7 +284,7 @@ public class S400W
 			logResponse("clean().go", response);
 			if ( response!=CLEAN_GO ) return response;
 			
-			response = readResponse(Integer.getInteger(PROPERTY_KEY + ".timeout.clean", 30000));
+			response = readResponse(Integer.getInteger(PROPERTY_KEY + ".timeout.clean", 40000));
 			logResponse("clean().end", response);
 			return response;
 		}
@@ -310,14 +307,13 @@ public class S400W
 	 * @return {@link #CALIBRATE_END} if sucessfully finished, any other otherwise
 	 * 		including {@link #EOF} and <code>null</code> for timeouts, ({@link #NOPAPER} if calibration sheet is not inserted).
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public byte[] calibrate() throws IOException, InterruptedException
+	public byte[] calibrate() throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(GET_STATUS);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("calibrate().check", response);
 			if ( response!=SCAN_READY ) return response;
@@ -357,60 +353,61 @@ public class S400W
 	 * @return {@link #SCAN_READY} if sucessfully finished, any other response otherwise,
 	 * 		including {@link #EOF} and <code>null</code> for timeouts
 	 * @throws IOException if IO errors occurred.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	public byte[] scan(int resolution, Receiver preview, Receiver jpeg) throws IOException, InterruptedException
+	public byte[] scan(int resolution, Receiver preview, Receiver jpeg) throws IOException, InterruptedIOException
 	{
 		try {
 			openSocket();
 			sendCommand(GET_STATUS);
-			sleep(200);
 			byte[] response = readResponse();
 			logResponse("scan().check", response);
 			if ( response!=SCAN_READY ) return response;
 
 			if ( resolution>0 ) {
 				sendCommand(resolution==600 ? SET_DPI_HIGH : SET_DPI_STANDARD);
-				sleep(200);
 				response = readResponse();
 				logResponse("scan().dpi" + resolution, response);
 				if ( resolution==600 && response!=DPI_HIGH || resolution!=600 && response!=DPI_STANDARD ) return response;
 			}
 			
 			sendCommand(START_SCAN);
-			sleep(200);
 			response = readResponse();
 			logResponse("scan().go", response);
 			if ( response!=SCAN_GO ) return response;
 
+			final boolean isFiner = log.isLoggable(Level.FINER);
 			final int dataTimeout = Integer.getInteger(PROPERTY_KEY + ".timeout.data", 30000);
-			final boolean isFiner  = log.isLoggable(Level.FINER);
+			final int tagLength   = PREVIEW_END.length + 1;
+			final byte[] buffer   = new byte[61440 + tagLength];  // buffer size arbitrarily chosen to be 32 lines
 			
 			if ( preview!=null ) {
-				final int taglen  = PREVIEW_END.length + 1;
-
 				sendCommand(SEND_PREVIEW_DATA);
 				sleep(1000);
-				ByteBuffer buf = ByteBuffer.allocate(30720 + taglen);  // buffer size arbitrarily chosen to be 16 lines
-				int read = receive(buf, dataTimeout);
+				ByteBuffer partBuf = ByteBuffer.wrap(buffer, tagLength, buffer.length - tagLength).slice();
+				int read = receive(partBuf, dataTimeout);
 
 				// if known response = error
-				if ( read>0 && read<=16 && detectResponse(buf.array(), read)!=buf.array() ) {
-					return detectResponse(buf.array(), read);
+				if ( read>0 ) {
+					response = detectResponse(buffer, partBuf.arrayOffset(), read);
+					if ( response!=buffer ) {
+						logResponse("scan().preview", response);
+						return response;
+					}
 				}
 
 				// this is a bit tricky. we need to carry over bytes in between fetching 
 				// so we can detect the end marker even if it is torn apart.
 				int total = 0;
+				boolean readPreview = true;
 				while ( read>0 ) {
 					total += read;
 					if ( isFiner ) log.finer("scan().preview: " + total + " ( " + (total / (1920)) + " lines)");
-					int end = buf.position();
-					preview.receive(buf.array(), end - read, read);
-					if ( end<taglen || cmp(PREVIEW_END, 0, buf.array(), end - taglen, PREVIEW_END.length) ) break; 					
-					buf.position(end - taglen);
-					buf.compact();
-					read = receive(buf, dataTimeout);
+					if ( readPreview ) readPreview &= preview.receive(buffer, partBuf.arrayOffset(), read);
+					System.arraycopy(buffer, read, buffer, 0, tagLength);
+					if ( cmp(PREVIEW_END, 0, buffer, 0, PREVIEW_END.length) ) break;
+					partBuf.clear();
+					read = receive(partBuf, dataTimeout);
 				}
 				// TODO: not in finally, hmm
 				preview.receive(EOF,  0, 0);
@@ -425,7 +422,6 @@ public class S400W
 					: Integer.getInteger(PROPERTY_KEY + ".timeout.jpeg-size", 20000);
 
 				sendCommand(GET_JPEG_SIZE);
-				sleep(200);
 				response = readResponse(sizeTimeout);
 				logResponse("scan().jpegsize", response);
 				if ( response!=JPEG_SIZE ) return response;
@@ -437,27 +433,27 @@ public class S400W
 					| 0xFF000000 & (_buffer[JPEG_SIZE.length + 3] << 24);
 				if ( log.isLoggable(Level.FINE) ) log.log(Level.FINE, "scan().jpeg: {0,number} bytes", size);
 
-				jpeg.receive(JPEG_SIZE, 0, size);
-				int total = 0;
-				int read = 0; 
 				try {
+					if ( !jpeg.receive(JPEG_SIZE, 0, size) ) return EOF;
+					ByteBuffer buf = ByteBuffer.wrap(buffer);
 					sendCommand(SEND_JPEG_DATA);
 					sleep(500);
-					ByteBuffer buf = ByteBuffer.allocate(32768);
+					int total = 0;
+					int read = 0; 
 					do {
+						buf.clear();
 						read = receive(buf, dataTimeout);
 						if ( read>0 ) {
 							total += read;
 							if ( isFiner ) log.finer("scan().jpeg: " + total + "/" + size + " bytes");
-							jpeg.receive(buf.array(), 0, read);
-							buf.clear();
+							if ( !jpeg.receive(buffer, 0, read) ) break;
 						}
 					} while ( total<size && read>0 );
+					if ( read==0 ) return null;
+					if ( read <0 ) return EOF;
 				} finally {
 					jpeg.receive(EOF,  0, 0);
 				}
-				if ( read==0 ) return null;
-				if ( read <0 ) return EOF;
 			}
 				
 			return SCAN_READY;
@@ -473,7 +469,7 @@ public class S400W
 	
 	
 	/**
-	 * @return <code>true</code> if the response is one of the known scanner's responses (not {@link #EOF}).
+	 * @return <code>true</code> if the response is one of the public response constants (not {@link #EOF}).
 	 */
 	public static boolean isKnownResponse(byte[] buffer)
 	{
@@ -514,15 +510,18 @@ public class S400W
 	 * 
 	 * @throws IOException If the socket cannot be opened and set up correctly.
 	 */
-	private void openSocket() throws IOException
+	private void openSocket() throws IOException, InterruptedIOException
 	{
 		if ( log.isLoggable(Level.FINE) ) log.fine("opening socket to " + _targetHost + ":" + _targetPort);
 		_selector = Selector.open();
 		_socket = SocketChannel.open();
-		_socket.connect(new InetSocketAddress(_targetHost, _targetPort));
-		_socket.finishConnect();
 		_socket.configureBlocking(false);
-		_socket.register(_selector, SelectionKey.OP_READ);
+		_socket.register(_selector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
+		if ( !_socket.connect(new InetSocketAddress(_targetHost, _targetPort)) ) {
+			int timeout = Integer.getInteger(PROPERTY_KEY + ".timeout.connect", 5000);
+			_selector.select(timeout);
+			if ( !_socket.finishConnect() ) throw new IOException("Couldn't connect to scanner");
+		}
 	}
 	
 	
@@ -540,17 +539,17 @@ public class S400W
 	
 	
 	/**
-	 * Sends a command to the target and sleep 100 ms.
+	 * Sends a command to the target. Sleeps before and after sending.
 	 * 
 	 * @param command the command.
 	 * @throws IOException if sending the buffer fails.
-	 * @throws InterruptedException if interrupted while sleeping.
+	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
-	private void sendCommand(byte[] command) throws IOException, InterruptedException
+	private void sendCommand(byte[] command) throws IOException, InterruptedIOException
 	{
 		if ( log.isLoggable(Level.FINE) ) log.fine("sendCommand(" + Arrays.toString(command) + ")");
-		_socket.write(ByteBuffer.wrap(command));
-		sleep(100);
+		sleep(200);
+		if ( _socket.write(ByteBuffer.wrap(command))>0 ) sleep(200);
 	}
 	
 
@@ -591,12 +590,14 @@ public class S400W
 	 * @param length number of bytes set in <code>buffer</code>
 	 * @return response constant matching the response or <code>buffer</code> if unknown response. 
 	 */
-	private byte[] detectResponse(byte[] buffer, int length)
+	private byte[] detectResponse(byte[] buffer, int offset, int length)
 	{
-		if ( length <0 ) return EOF;
 		if ( length==0 ) return null;
-		for ( int i = 0; i<RESPONSES.length; i++ ) {
-			if ( length>=RESPONSES[i].length && cmp(buffer, 0, RESPONSES[i], 0, RESPONSES[i].length) ) return RESPONSES[i];
+		if ( length <0 ) return EOF;
+		if ( length<=_buffer.length ) {
+			for ( int i = 0; i<RESPONSES.length; i++ ) {
+				if ( length>=RESPONSES[i].length && cmp(buffer, offset, RESPONSES[i], 0, RESPONSES[i].length) ) return RESPONSES[i];
+			}
 		}
 		return buffer;
 	}	
@@ -622,7 +623,7 @@ public class S400W
 	private byte[] readResponse(int timeout) throws IOException
 	{
 		Arrays.fill(_buffer, (byte)0);
-		return detectResponse(_buffer, receive(_buffer, timeout));
+		return detectResponse(_buffer, 0, receive(_buffer, timeout));
 	}	
 
 	
@@ -656,14 +657,18 @@ public class S400W
 	/**
 	 * <code>Thread.sleep</code> wrapper.
 	 */
-	static void sleep(int ms) throws InterruptedException
+	public static void sleep(int ms) throws InterruptedIOException
 	{
 		// i had some trouble using normal sleep, probably due to to deep sleep states on the cpu
 		//long then = ms*1000000L + System.nanoTime();
 		//do {
 		//	Thread.sleep(ms / 10 + 1);
 		//} while ( System.nanoTime()<then );
-		Thread.sleep(ms);
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			throw new InterruptedIOException("Interrupted timeout");
+		}
 	}
 	
 }
