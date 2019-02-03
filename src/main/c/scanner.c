@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 			"  dpi <300|600>\n"
 			"  preview [filename]\n"
 			"  scan [300|600] [filename]\n"
-			"  something [data] - something\n"
+			"  something [data] - send file data and expect something\n"
 			"  probe [start] - try all commands\n"
 			"  raw <command> - raw command\n"
 			, argv[0]);
