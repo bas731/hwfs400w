@@ -11,8 +11,8 @@ Prices range from high (>100 €/$) to very low (30 € incl. VAT) in special sa
 Its predecessor is the Mustek S400 iScan docking station for iPads.
 
 It creates its own WIFI network always named *DIRECT_<mac>-<model>* where <mac> are the last six digits
-of the scanner's MAC address and the model is ```AirCopy``` or ```iScanAir``` etc.
-The ip address is always ```192.168.18.33``` and the scanner service is listening on port ```23```
+of the scanner's MAC address and the model is `AirCopy` or `iScanAir` etc.
+The ip address is always `192.168.18.33` and the scanner service is listening on port `23`
 The scanner provides DHCP and only allows clients that successfully aquired an IP via DHCP access to the scanning service.
 
 While it is well suited for what it is advertised for - easily scan a document on the go with your tablet or phone

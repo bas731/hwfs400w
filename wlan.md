@@ -40,10 +40,10 @@ DHCP is necessary so if you don't have one: `apt-get install dhclient`
 
 
 If you have dhcp running with a router and you have no resolvconf package installed, you might want to protected
-*/etc/resolv.conf*: ```chmod +i /etc/resolv.conf```
+*/etc/resolv.conf*: `chmod +i /etc/resolv.conf`
 If your dhcp client can be configured to not overwrite it, then you don't need it.
 
-If you have or want (```apt-get install resolvconf```) to use resolvconf:
+If you have or want (`apt-get install resolvconf`) to use resolvconf:
 edit */etc/resolvconf/interface-order* and make sure that wlan entries comes after eth.
 (If you have a bridge setup, e.g. you have more than ethernet port and use it as switch, don't forget to add a _br*_ wildcard).
 
@@ -85,7 +85,7 @@ network={
 }
 ```
 
-Protect it: ```chmod 0600 /etc/wpa_supplicant/wpa_supplicant.conf```
+Protect it: `chmod 0600 /etc/wpa_supplicant/wpa_supplicant.conf`
 
 ### network/interfaces
 
@@ -99,7 +99,7 @@ iface wlan0 inet manual
 iface s400w inet dhcp
 ```
 
-Protect it: ```chmod 0600 /etc/network/interfaces```
+Protect it: `chmod 0600 /etc/network/interfaces`
 
 restart networking and ifup / down wlan0, maybe reboot:
 ```sh
@@ -127,7 +127,7 @@ case "${reason}.${interface}" in
 esac
 ```
 
-```chmod 0644 /etc/dhcp/dhclient-enter-hooks.d/s400w``
+`chmod 0644 /etc/dhcp/dhclient-enter-hooks.d/s400w`
 
 
 ### Firewall
@@ -143,7 +143,7 @@ iptables -i wlan0 -A INPUT  -p tcp -j REJECT --reject-with tcp-reset
 iptables -i wlan0 -A INPUT  -j REJECT --reject-with icmp-proto-unreachable
 ```
 
-Save it: ```iptables-save >/etc/iptables.s400w.rules```
+Save it: `iptables-save >/etc/iptables.s400w.rules`
 
 edit */etc/rc.local* and add
 ```sh
