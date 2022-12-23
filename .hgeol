@@ -1,6 +1,5 @@
-# cvs stored in LF, mercurial import did the same (it's the default anyway)
-#[repository]
-#native = LF
+[repository]
+native = LF
 
 [patterns]
 {.hgeol,.hgignore,.hgtags} = native
@@ -11,4 +10,5 @@
 **.{xml,xsl,dtd,ent} = native
 **.{html,css,js,txt} = native
 **.g = native
+**.md = native
 **/Makefile = LF
