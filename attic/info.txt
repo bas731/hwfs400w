@@ -1,5 +1,4 @@
-
-known bug: page feed on shutdown is letter sized, not a4...
+Known bug: page feed on shutdown is letter sized, not a4...
 
 Manufacturer: Mustek
 - Mustek iScan Air
@@ -31,9 +30,4 @@ Software:
 	-> http://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe
 
 
-
-
-
-
-
-(evtl. kompatibel mit Mustek H410W iScanAirGo: http://www.mustek.com.tw/H410W/iScanAirGo.html)
+(maybe compatible with Mustek H410W iScanAirGo: http://www.mustek.com.tw/H410W/iScanAirGo.html)
