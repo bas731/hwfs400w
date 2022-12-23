@@ -6,31 +6,32 @@
 	<artifactId>hwfs400w</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>HWFS 400w Support</name>
+	<name>HWF S400w Support</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.javaVersion>8</project.build.javaVersion>
 	</properties>
 
-	<description>A library to access the HWFS 400W WIFI scanner</description>
-	<url>https://github.com/845731/hwfs400w/</url>
+	<description>A library to access the HWF S400W WIFI scanner</description>
+	<url>https://github.com/bas731/hwfs400w</url>
 
 	<developers>
 		<developer>
-			<id>845731</id>
+			<id>bas731</id>
 			<name>bastel</name>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/845731/hwfs400w</connection>
-		<url>https://github.com/845731/hwfs400w</url>
+		<connection>scm:git:https://github.com/bas731/hwfs400w.git</connection>
+		<!--tag>main</tag-->
+		<url>https://github.com/bas731/hwfs400w</url>
 	</scm>
 
 	<issueManagement>
 		<system>github issues</system>
-		<url>https://github.com/845731/hwfs400w</url>
+		<url>https://github.com/bas731/hwfs400w/issues</url>
 	</issueManagement>
 
 	<dependencyManagement>
