@@ -1,8 +1,11 @@
-# Mustek S400W iScan Air / ion Air Copy [+E-Post Edition] / Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー / HALO Wireless Portable Scanner
+# Mustek S400W iScan Air
 
-Last Update: 2017-08-24: updated information
+Also known as:
+- ion Air Copy [+E-Post Edition]
+- Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー
+- HALO Wireless Portable Scanner
 
-## Mustek S400W iScan Air
+## Introduction
 
 The Mustek S400W iScan Air aka ion Air Copy [+E-Post Edition] aka Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー aka HALO Wireless Portable Scanner
 is a simple document scanner for up to A4 wide documents with up to 40.5 cm length (almost ~9570 vertical pixel for 600 DPI!).
@@ -89,20 +92,14 @@ iOS / Android apps do not check the model and work fine.
 - Windows: [https://www.century.co.jp/support/download/iscanair-win7vx.html](https://www.century.co.jp/support/download/iscanair-win7vx.html)
   [https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe](https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe)
 
+The japanese site has further software for windows 10 etc.
+
+
 ## Custom Access
 
-### Download
+This project provides a [complete network protocol specification](specification.md) and clean room implementations for both C and Java to access it.
+Additionally there are example command line applications to scan pictures.
 
-I am providing free source code and applications:
-- a sleek [java library](code/java.zip) supporting everything.
-- a simple java [command line scanner](code/java.zip) for demonstration purposes.
-- a simple [c library](code/c.zip) supporting everything, too.
-- a simple [command line scanner](code/c.zip) with binaries for [windows and linux](release/).
-
-The java version needs a few changes I figured out while implementing the c version.
-I have to admit that I had not coded C for around a decade before implementing this...
-
-
-## Specification
-
-See [Specification](specification.md)
+To make all of this work you need to integrate the scanner into your wifi network which requires a wifi card.
+I have compiled instructions [for Linux](wlan.md), it should also be possible for Windows but I have not attempted
+that for real.
