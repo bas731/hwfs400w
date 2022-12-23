@@ -1,8 +1,0 @@
-syntax: glob
-.settings/
-.classpath
-.project
-target/
-src/main/c/win32/*/*
-src/main/c/win32/*.sdf
-src/main/c/win32/*.suo
