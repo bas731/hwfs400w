@@ -1,4 +1,4 @@
-/* This file is licensed under CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).  
+/* This file is licensed under CC-CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/).
  *
  * Created 2014-10-12 by bastel.
  */
@@ -19,14 +19,13 @@ import java.util.logging.Logger;
  * A simple command line scanner application for demonstration purposes.
  * <p>
  * This file is licensed under the <a href="http://creativecommons.org/publicdomain/zero/1.0/">Creative Commons License CC-CC0 1.0</a>.
- * 
+ *
  * @author bastel
  */
 public class Scanner
 {
-	public static void main(String[] args) throws InterruptedException, IOException
+	public static void main(final String[] args) throws InterruptedException, IOException
 	{
-		args = new String[] { "scan" };
 		Handler h = new ConsoleHandler();
 		h.setLevel(Level.FINE);
 		Logger.getLogger(Scanner.class.getPackage().getName()).addHandler(h);
@@ -38,7 +37,7 @@ public class Scanner
 			if ( buf==null || buf==S400W.EOF || S400W.isKnownResponse(buf) ) System.exit(-1);
 			System.out.println(S400W.toString(buf));
 		}
-		
+
 		else if ( "status".equals(args[0]) ) {
 			while ( true ) {
 				buf = r.getStatus();
@@ -47,7 +46,7 @@ public class Scanner
 				S400W.sleep(5000);
 			}
 		}
-		
+
 		else if ( "dpi".equals(args[0]) ) {
 			if ( args.length>1 ) {
 				if ( "300".equals(args[1]) ) System.exit(r.setResolution(300) ? 0 : -1);
@@ -61,7 +60,7 @@ public class Scanner
 			if ( buf!=S400W.CLEAN_END ) System.exit(-1);
 			System.out.println(S400W.toString(buf));
 		}
-		
+
 		else if ( "calibrate".equals(args[0]) ) {
 			buf = r.calibrate();
 			if ( buf!=S400W.CALIBRATE_END ) System.exit(-1);
@@ -82,7 +81,7 @@ public class Scanner
 			fos.close();
 			System.out.println(S400W.toString(buf));
 		}
-			
+
 		else if ( "scan".equals(args[0]) ) {
 			final int dpi  = args.length <3  ? 0 : "dpi300".equals(args[1]) ? 300 : "dpi600".equals(args[1]) ? 600 : 0;
 			final String  name = args.length==1 ? ("./" + System.currentTimeMillis() + ".jpg") : args.length==2 ? args[1] : args[2];

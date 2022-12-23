@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>hwfs400w</groupId>
+	<artifactId>hwfs400w</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>HWFS 400w Support</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.javaVersion>8</project.build.javaVersion>
+	</properties>
+
+	<description>A library to access the HWFS 400W WIFI scanner</description>
+	<url>https://github.com/845731/hwfs400w/</url>
+
+	<developers>
+		<developer>
+			<id>845731</id>
+			<name>bastel</name>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/845731/hwfs400w</connection>
+		<url>https://github.com/845731/hwfs400w</url>
+	</scm>
+
+	<issueManagement>
+		<system>github issues</system>
+		<url>https://github.com/845731/hwfs400w</url>
+	</issueManagement>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency> <groupId>junit</groupId>               <artifactId>junit</artifactId>                          <version>4.5</version>          <type>jar</type> </dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.0</version>
+					<configuration>
+						<source>${project.build.javaVersion}</source>
+						<target>${project.build.javaVersion}</target>
+						<encoding>UTF-8</encoding>
+						<jdkToolchain>
+							<vendor>openjdk</vendor>
+							<version>${project.build.javaVersion}</version>
+						</jdkToolchain>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.8</version>
+					<configuration>
+						<useProjectReferences>true</useProjectReferences>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>true</downloadJavadocs>
+						<additionalConfig>
+							<file>
+								<name>.settings/org.eclipse.core.resources.prefs</name>
+								<content>
+									<![CDATA[eclipse.preferences.version=1${line.separator}encoding/<project>=${project.build.sourceEncoding}${line.separator}]]>
+								</content>
+							</file>
+							<file>
+								<name>.settings/org.eclipse.jdt.core.prefs</name>
+								<content>
+									<![CDATA[eclipse.preferences.version=1${line.separator}org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled${line.separator}org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate${line.separator}org.eclipse.jdt.core.compiler.codegen.targetPlatform=${project.build.javaVersion}${line.separator}org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve${line.separator}org.eclipse.jdt.core.compiler.compliance=${project.build.javaVersion}${line.separator}org.eclipse.jdt.core.compiler.debug.lineNumber=generate${line.separator}org.eclipse.jdt.core.compiler.debug.localVariable=generate${line.separator}org.eclipse.jdt.core.compiler.debug.sourceFile=generate${line.separator}org.eclipse.jdt.core.compiler.problem.assertIdentifier=error${line.separator}org.eclipse.jdt.core.compiler.problem.enumIdentifier=error${line.separator}org.eclipse.jdt.core.compiler.release=disabled${line.separator}org.eclipse.jdt.core.compiler.source=${project.build.javaVersion}${line.separator}]]>
+								</content>
+							</file>
+						</additionalConfig>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

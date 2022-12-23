@@ -1,10 +1,8 @@
 syntax: glob
-java/target/
-#java/.classpath
-#java/.project
-java/.settings/
-temp
-re
-c/win32/*/*
-c/win32/*.sdf
-c/win32/*.suo
+.settings/
+.classpath
+.project
+target/
+src/main/c/win32/*/*
+src/main/c/win32/*.sdf
+src/main/c/win32/*.suo
