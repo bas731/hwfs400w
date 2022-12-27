@@ -7,12 +7,12 @@ package hwfs400w;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +48,7 @@ public class S400W
 	/**
 	 * A simple callback interface used for receiving preview and jpeg data.
 	 */
+	@FunctionalInterface
 	public interface Receiver
 	{
 		/**
@@ -496,12 +497,9 @@ public class S400W
 	 */
 	public static String toString(byte[] buffer)
 	{
-		try {
-			return new String(buffer, 0, getResponseLength(buffer), "US-ASCII");
-		}
-		catch (UnsupportedEncodingException e) {
-			return new String(buffer, 0, getResponseLength(buffer));
-		}
+		return buffer==null ? "<no data>"
+			: buffer==EOF ? "<EOF>"
+			: new String(buffer, 0, getResponseLength(buffer), StandardCharsets.US_ASCII);
 	}
 
 	
@@ -519,7 +517,7 @@ public class S400W
 		_socket.register(_selector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
 		if ( !_socket.connect(new InetSocketAddress(_targetHost, _targetPort)) ) {
 			int timeout = Integer.getInteger(PROPERTY_KEY + ".timeout.connect", 5000);
-			_selector.select(timeout);
+			select(timeout);
 			if ( !_socket.finishConnect() ) throw new IOException("Couldn't connect to scanner");
 		}
 	}
@@ -570,12 +568,11 @@ public class S400W
 	 * @return Number of bytes read, 0 if timeout reached, or -1 for EOF.
 	 * @throws IOException If IO errors occurred.
 	 */
-	private int receive(ByteBuffer buffer, int timeout) throws IOException
+	private int receive(ByteBuffer buffer, long timeout) throws IOException
 	{
-		if ( _selector.select(timeout)>0 ) {
+		if ( select(timeout)>0 ) {
 			int r = _socket.read(buffer);
 			if ( log.isLoggable(Level.FINER) ) log.finer("receive(): read " + r + " bytes");
-			_selector.selectedKeys().clear();
 			return r; // shouldn't be 0
 		}
 		if ( log.isLoggable(Level.FINER) ) log.finer("receive(): no data");
@@ -583,6 +580,36 @@ public class S400W
 	}
 
 	
+	private int select(long timeout) throws IOException
+	{
+		final long bogusTimeout = Long.getLong(PROPERTY_KEY + ".timeout.bogus", 100);
+		_selector.selectedKeys().clear();
+		long start = System.currentTimeMillis(), end = start + timeout;
+		while ( timeout>0 ) {
+			int result = _selector.select(timeout);
+			if ( result!=0 ) return result;
+
+			long now = System.currentTimeMillis();
+			timeout = end - now;
+			
+			// spurious wakeup detected, possible faulty jvm with immediate wakeup
+			if ( timeout>0 ) {
+				if ( start - now < bogusTimeout ) {
+					try {
+						Thread.sleep(Math.min(timeout, bogusTimeout));
+						now = System.currentTimeMillis();
+						timeout = Math.max(1, end - now);
+					} catch (InterruptedException e) {
+						throw (InterruptedIOException)new InterruptedIOException(e.getMessage()).initCause(e.getCause()); 
+					}
+				}
+				start = now;
+			}
+		}
+		return 0;
+	}
+	
+
 	/**
 	 * Matches a response to the know responses and returns the constant, so that <code>==</code> can be used later on.
 	 * 
@@ -632,11 +659,7 @@ public class S400W
 	 */
 	private void logResponse(String method, byte[] response)
 	{
-		if ( log.isLoggable(Level.FINE) ) {
-			if ( response==null )     log.fine(method + ": <no data>");
-			else if ( response==EOF ) log.fine(method + ": <EOF>");
-			else log.fine(method + ": " + toString(response));
-		}
+		if ( log.isLoggable(Level.FINE) ) log.fine(method + ": " + toString(response));
 	}
 
 	
@@ -667,8 +690,8 @@ public class S400W
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {
-			throw new InterruptedIOException("Interrupted timeout");
+			throw (InterruptedIOException)new InterruptedIOException("Interrupted timeout").initCause(e);
 		}
 	}
-	
+
 }
