@@ -5,6 +5,7 @@
 
 package hwfs400w;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
@@ -190,8 +191,7 @@ public class S400W
 	 */
 	public byte[] getVersion() throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(GET_VERSION);
 			byte[] response = readResponse();
 			logResponse("getVersion", response);
@@ -200,9 +200,6 @@ public class S400W
 		catch (IOException e) {
 			log.log(Level.SEVERE, "getVersion()", e);
 			throw e;
-		}
-		finally {
-			closeSocket();
 		}
 	}
 
@@ -216,8 +213,7 @@ public class S400W
 	 */
 	public byte[] getStatus() throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(GET_STATUS);
 			byte[] response = readResponse();
 			logResponse("getStatus()", response);
@@ -226,9 +222,6 @@ public class S400W
 		catch (IOException e) {
 			log.log(Level.SEVERE, "getStatus()", e);
 			throw e;
-		}
-		finally {
-			closeSocket();
 		}
 	}
 	
@@ -243,8 +236,7 @@ public class S400W
 	 */
 	public boolean setResolution(int dpi) throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(dpi==600 ? SET_DPI_HIGH : SET_DPI_STANDARD);
 			byte[] response = readResponse();
 			logResponse("setResolution(" + dpi + ")", response);
@@ -253,9 +245,6 @@ public class S400W
 		catch (IOException e) {
 			log.log(Level.SEVERE, "setResolution()", e);
 			throw e;
-		}
-		finally {
-			closeSocket();
 		}
 	}
 
@@ -273,8 +262,7 @@ public class S400W
 	 */
 	public byte[] clean() throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(GET_STATUS);
 			byte[] response = readResponse();
 			logResponse("clean().check", response);
@@ -294,9 +282,6 @@ public class S400W
 			log.log(Level.SEVERE, "clean()", e);
 			throw e;
 		}
-		finally {
-			closeSocket();
-		}
 	}
 
 	
@@ -313,8 +298,7 @@ public class S400W
 	 */
 	public byte[] calibrate() throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(GET_STATUS);
 			byte[] response = readResponse();
 			logResponse("calibrate().check", response);
@@ -333,9 +317,6 @@ public class S400W
 		catch (IOException e) {
 			log.log(Level.SEVERE, "calibrate()", e);
 			throw e;
-		}
-		finally {
-			closeSocket();
 		}
 	}
 	
@@ -359,8 +340,7 @@ public class S400W
 	 */
 	public byte[] scan(int resolution, Receiver preview, Receiver jpeg) throws IOException, InterruptedIOException
 	{
-		try {
-			openSocket();
+		try ( UncheckedCloseable connection = openSocket() ) {
 			sendCommand(GET_STATUS);
 			byte[] response = readResponse();
 			logResponse("scan().check", response);
@@ -464,9 +444,6 @@ public class S400W
 			log.log(Level.SEVERE, "scan()", e);
 			throw e;
 		}
-		finally {
-			closeSocket();
-		}
 	}
 	
 	
@@ -509,7 +486,7 @@ public class S400W
 	 * 
 	 * @throws IOException If the socket cannot be opened and set up correctly.
 	 */
-	private void openSocket() throws IOException, InterruptedIOException
+	private UncheckedCloseable openSocket() throws IOException, InterruptedIOException
 	{
 		if ( log.isLoggable(Level.FINE) ) log.fine("opening socket to " + _targetHost + ":" + _targetPort);
 		_selector = Selector.open();
@@ -524,13 +501,14 @@ public class S400W
 		} else {
 			_socket.register(_selector, SelectionKey.OP_READ);
 		}
+		return this::close;
 	}
 	
 	
 	/**
 	 * Closes the target connection.
 	 */
-	private void closeSocket()
+	private void close()
 	{
 		if ( _socket  !=null ) try { _socket  .close(); } catch (Exception e) {}
 		if ( _selector!=null ) try { _selector.close(); } catch (Exception e) {} 
@@ -699,4 +677,25 @@ public class S400W
 		}
 	}
 
+	
+	private interface UncheckedCloseable extends Closeable
+	{
+		@Override
+		void close();
+		
+		public static void close(AutoCloseable ac) {
+			try {
+				ac.close();
+			} catch (Exception e) {
+			}
+		}
+		
+		public static UncheckedCloseable wrap(UncheckedCloseable sc) {
+			return sc;
+		}
+		
+		public static UncheckedCloseable wrap(AutoCloseable sc) {
+			return () -> close(sc);
+		}
+	}
 }
