@@ -13,8 +13,8 @@ Prices range from high (>100 €/$) to very low (30 € incl. VAT) in special sa
 
 Its predecessor is the Mustek S400 iScan docking station for iPads.
 
-It creates its own WIFI network always named *DIRECT_<mac>-<model>* where <mac> are the last six digits
-of the scanner's MAC address and the model is `AirCopy` or `iScanAir` etc.
+It creates its own WIFI network always named *DIRECT_`<mac>`-`<model>`* where `<mac>` are the last six digits
+of the scanner's MAC address and the `<model>` is `AirCopy` or `iScanAir` etc.
 The ip address is always `192.168.18.33` and the scanner service is listening on port `23`
 The scanner provides DHCP and only allows clients that successfully aquired an IP via DHCP access to the scanning service.
 
@@ -29,18 +29,18 @@ a too low resolution) - the low prices it is sold for warrant a much better usag
 Manufacturer: Mustek, sold as:
 
 - Mustek iScan Air
-  - [https://www.mustek.com.tw/S400W/S400W.html](https://www.mustek.com.tw/S400W/S400W.html)
+  - <https://www.mustek.com.tw/S400W/S400W.html>
 - ionaudio Air Copy
-  - [https://www.ionaudio.com/products/details/air-copy](https://www.ionaudio.com/products/details/air-copy)
-  - [https://www.ionaudio.de/air-copy](https://www.ionaudio.de/air-copy)
-  - [https://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list](https://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list)
+  - <https://www.ionaudio.com/products/details/air-copy>
+  - <https://www.ionaudio.de/air-copy>
+  - <https://www.conrad.de/ce/de/product/650917/Dokumentenscanner-A4-Mustek-iScan-Air-A4-S400W-600-x-600-dpi-USB-microSD-microSDHC?ref=list>
 - ionaudio Air Copy E-Post Edition
-  - [https://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/](https://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/)
-  - [https://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn](https://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn)
+  - <https://www.meinpaket.de/de/air-copy-e-post-edition/p499782459/>
+  - <https://www.conrad.de/ce/de/product/1193466/Dokumentenscanner-A4-ION-Audio-Air-Copy-E-Post-Edition-USB-WLAN-80211-bgn>
 - Century CPS-A4WF 転写パットリくん A4 Wi-Fiポータブルスキャナー
-  - [https://www.century.co.jp/products/pc/cat420/cps-a4wf.html](https://www.century.co.jp/products/pc/cat420/cps-a4wf.html)
+  - <https://www.century.co.jp/products/pc/cat420/cps-a4wf.html>
 - HALO Wireless Portable Scanner for Photos and Documents
-  - [https://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html](https://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html)
+  - <https://www.qvc.com/HALO-Wireless-Portable-Scanner-for-Photos-and-Documents.product.E224976.html>
 
 
 ### Pictures / Data
@@ -73,7 +73,7 @@ The console is non interactive and there is some interesting info while:
 
 The device seems to have a unpopulated SD card slot right next to the CPU. There is also an unsoldered USB port,
 if a keyboard is connected to it, then one can press "a" to abort normal booting
-and an attempt is made to load the firmware from SD card.<p>
+and an attempt is made to load the firmware from SD card.
 
 
 ### Software
@@ -85,12 +85,12 @@ iOS / Android apps do not check the model and work fine.
 
 - Appstore: iOS, OS X, Androind, Win8, Win Phone 8
   earch for iscan air, air copy
-- Windows: [https://www.mustek.com.tw/S400W/S400W.html](https://www.mustek.com.tw/S400W/S400W.html)
-  [ftp://ftp.mustek.com.tw/pub/driver/iScanAir/](ftp://ftp.mustek.com.tw/pub/driver/iScanAir/)
-- Windows: [https://www.ionaudio.com/products/details/air-copy](https://www.ionaudio.com/products/details/air-copy)
-  [https://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip](https://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip)
-- Windows: [https://www.century.co.jp/support/download/iscanair-win7vx.html](https://www.century.co.jp/support/download/iscanair-win7vx.html)
-  [https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe](https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe)
+- Windows: <https://www.mustek.com.tw/S400W/S400W.html>
+  <ftp://ftp.mustek.com.tw/pub/driver/iScanAir/>
+- Windows: <https://www.ionaudio.com/products/details/air-copy>
+  <https://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip>
+- Windows: <https://www.century.co.jp/support/download/iscanair-win7vx.html
+  <https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe>
 
 The japanese site has further software for windows 10 etc.
 

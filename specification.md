@@ -159,7 +159,7 @@ Known responses map to ascii strings for the first n `<byte>` followed by paddin
 `40405050`: WifiBattery State
 
   - read hexadecimal number string, maybe in centivolts?
-  - >`284 or so = usb power, 240 = battery full level
+  - greater than 280 or so = usb power, 240 = battery full level
 
 `30004000`: unknown
 

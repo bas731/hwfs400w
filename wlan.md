@@ -61,7 +61,7 @@ Note: This documentation assumes our wlan is *wlan0*
 ### Roaming wpa_supplicant.conf
 
 Create */etc/wpa_supplicant/wpa_supplicant.conf* if not already there, and edit it.
-Alter the ssid to match your *DIRECT-<6 digits>-<AirCopy|iScanAir|etc>* and set the correct country:
+Alter the ssid to match your *DIRECT-`<6 digits>`-`<AirCopy|iScanAir|etc>`* and set the correct country:
 ```ini
 # "roaming" config for mustek s400w scanner
 update_config=1
