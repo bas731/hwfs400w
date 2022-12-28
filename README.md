@@ -83,14 +83,18 @@ No OCR, no multi page PDF. Mustek's software is multi language, 3rd party usuall
 Unfortunately, the windows version doesn't understand 3rd party hardware model codes.
 iOS / Android apps do not check the model and work fine.
 
-- Appstore: iOS, OS X, Androind, Win8, Win Phone 8
-  earch for iscan air, air copy
-- Windows: <https://www.mustek.com.tw/S400W/S400W.html>
-  <ftp://ftp.mustek.com.tw/pub/driver/iScanAir/>
-- Windows: <https://www.ionaudio.com/products/details/air-copy>
-  <https://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip>
-- Windows: <https://www.century.co.jp/support/download/iscanair-win7vx.html
-  <https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe>
+- Appstore:
+  - iOS, OS X, Androind, Win8, Win Phone 8
+  - search for iscan air, air copy
+- Windows:
+  - <https://www.mustek.com.tw/S400W/S400W.html>
+  - <ftp://ftp.mustek.com.tw/pub/driver/iScanAir/>
+- Windows:
+  - <https://www.ionaudio.com/products/details/air-copy>
+  - <https://www.ionaudio.com/downloads/Air_Copy_for_Windows_7_v1.0.3.zip>
+- Windows:
+  - <https://www.century.co.jp/support/download/iscanair-win7vx.html
+  - <https://www.century.co.jp/support/download/lib/iScanAir_win7_vista_xp.exe>
 
 The japanese site has further software for windows 10 etc.
 
