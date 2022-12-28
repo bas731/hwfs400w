@@ -2,8 +2,8 @@
 
 ## Communication
 
-- Optional: Check if your WIFI is connected to a SSID 'DIRECT-<mac>_<model>'
-- Optional: Check if <mac> matches MAC address of 192.168.33.18
+- Optional: Check if your WIFI is connected to a SSID 'DIRECT-`<mac>`_`<model>`'
+- Optional: Check if `<mac>` matches MAC address of 192.168.33.18
 - Open TCP connection to 192.168.33.18:23
 - Close connection after finishing action: status, calibration, cleaning, scanning, resolution, unless chained together (aka status + resolution + scan)
 - Socket timeout 60 seconds
@@ -15,16 +15,16 @@
 
 
 ## Legend
-- <byte>: octet bits
-- <number>: 4 byte, little endian
-- <mac>: 6 characters making up hexadecimal number
-- <model>: 'AirCopy' | 'iScanAir' | ?
+- `<byte>`: octet bits
+- `<number>`: 4 byte, little endian
+- `<mac>`: 6 characters making up hexadecimal number
+- `<model>`: 'AirCopy' | 'iScanAir' | ?
 
 
 ## Responses
 
-Are usually less than 16 <byte>s (except preview and jpeg data), so a buffer of 16 bytes is enough.
-Known responses map to ascii strings for the first n <byte> followed by padding (which can be ignored):
+Are usually less than 16 `<byte>`s (except preview and jpeg data), so a buffer of 16 bytes is enough.
+Known responses map to ascii strings for the first n `<byte>` followed by padding (which can be ignored):
 
 `devbusy`
 
@@ -85,18 +85,18 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 ## Commands
 
-- Send as <number>s.
+- Send as `<number>`s.
 - Waiting after sending a command is recommended. Between 200 ms and 500 ms.
 - Waiting some more after a function finished (cleaning, calibration, scanning) is recommended, too. 500 ms.
 
 `20203030`: get version
 
-  -read: {1; 9} <byte>; known response = error
+  -read: {1; 9} `<byte>`; known response = error
 
   Example: IO0a.032
   - ASCII string
-  - first 2 <byte> = manufacturer code, known: "NB" = Mustek and "IO" ion
-  - bytes after the '.' are a decimal number aka firmware version. Versions >=26 support 600 DPI.
+  - first 2 `<byte>` = manufacturer code, known: "NB" = Mustek and "IO" ion
+  - bytes after the '.' are a decimal number aka firmware version. Versions >`=26 support 600 DPI.
 
 `50006000`: get status
 
@@ -139,31 +139,31 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 `30304040`: send preview data
 
   - wait 1s
-  - read n * 1920 <byte> (640 pixel per line, 3 <byte> per pixel: RGB, most likely 1200 lines max)
-  - ends on `previewend` <byte>
+  - read n * 1920 `<byte>` (640 pixel per line, 3 `<byte>` per pixel: RGB, most likely 1200 lines max)
+  - ends on `previewend` `<byte>`
   - wait 1s
 
 `c000d000`: send jpeg size
 
   - wait 200ms
-  - read `jpegsize` <number>
+  - read `jpegsize` `<number>`
 
 
 `e000f000`: send jpeg data
 
   - wait 500ms
-  - read $jpegsize <byte>
+  - read $jpegsize `<byte>`
 
 ### Unofficial Commands
 
 `40405050`: WifiBattery State
 
   - read hexadecimal number string, maybe in centivolts?
-  - >284 or so = usb power, 240 = battery full level
+  - >`284 or so = usb power, 240 = battery full level
 
 `30004000`: unknown
 
-  -eems to expect more data
+  Seems to expect more data
 
 `70008000`: DevpowerOff
 
