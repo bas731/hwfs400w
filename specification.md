@@ -91,7 +91,7 @@ Known responses map to ascii strings for the first n `<byte>` followed by paddin
 
 `20203030`: get version
 
-  -read: {1; 9} `<byte>`; known response = error
+  - read: {1; 9} `<byte>`; known response = error
 
   Example: IO0a.032
   - ASCII string
@@ -167,7 +167,7 @@ Known responses map to ascii strings for the first n `<byte>` followed by paddin
 
 `70008000`: DevpowerOff
 
-   Turns of device, no response.
+   Turns device off, no response.
 
 
 ## Example
@@ -175,12 +175,12 @@ Known responses map to ascii strings for the first n `<byte>` followed by paddin
 How to get a 300 DPI scan:
 
 1. open socket
-2. `50006000`
-3. if response not `scanready`, abort
-4. `10002000`
-5. if response not `scango`, abort
-6. `c000d000`
-7. if response not `jpegsize`, abort
-8. allocate file for given size
-9. `e000f000`
-10. read jpeg data
+1. `50006000`
+1. if response not `scanready`, abort
+1. `10002000`
+1. if response not `scango`, abort
+1. `c000d000`
+1. if response not `jpegsize`, abort
+1. allocate file for given size
+1. `e000f000`
+1. read jpeg data
