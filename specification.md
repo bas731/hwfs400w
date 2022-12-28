@@ -37,7 +37,7 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 `nopaper`
 
-  - Device idle. Nothing inserted, thus error for scan, calibrate, clean.
+  Device idle. Nothing inserted, thus error for scan, calibrate, clean.
 
 `scanready`
 
@@ -57,11 +57,11 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 `cleanend`
 
-  - Device busy, cleaning finished.
+  Device busy, cleaning finished.
 
 `dpistd`
 
-  - Resolution set to 300 DPI.
+  Resolution set to 300 DPI.
 
 `dpifine`
 
@@ -91,7 +91,7 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 `20203030`: get version
 
-  read: {1; 9} <byte>; known response = error
+  -read: {1; 9} <byte>; known response = error
 
   Example: IO0a.032
   - ASCII string
@@ -158,15 +158,17 @@ Known responses map to ascii strings for the first n <byte> followed by padding 
 
 `40405050`: WifiBattery State
 
-  read ~0x287 or 0x284 or so = usb power, ~0x240 = battery full?
+  - read hexadecimal number string, maybe in centivolts?
+  - >284 or so = usb power, 240 = battery full level
 
 `30004000`: unknown
 
-  seems to expect more data
+  -eems to expect more data
 
 `70008000`: DevpowerOff
 
-   Turns of device
+   Turns of device, no response.
+
 
 ## Example
 
