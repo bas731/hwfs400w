@@ -14,6 +14,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -514,11 +515,14 @@ public class S400W
 		_selector = Selector.open();
 		_socket = SocketChannel.open();
 		_socket.configureBlocking(false);
-		_socket.register(_selector, SelectionKey.OP_READ | SelectionKey.OP_CONNECT);
 		if ( !_socket.connect(new InetSocketAddress(_targetHost, _targetPort)) ) {
 			int timeout = Integer.getInteger(PROPERTY_KEY + ".timeout.connect", 5000);
+			SelectionKey key = _socket.register(_selector, SelectionKey.OP_CONNECT);
 			select(timeout);
 			if ( !_socket.finishConnect() ) throw new IOException("Couldn't connect to scanner");
+			key.interestOps(SelectionKey.OP_READ);
+		} else {
+			_socket.register(_selector, SelectionKey.OP_READ);
 		}
 	}
 	
@@ -582,8 +586,9 @@ public class S400W
 	
 	private int select(long timeout) throws IOException
 	{
+		for ( Iterator<SelectionKey> it = _selector.selectedKeys().iterator(); it.hasNext(); it.remove() ) it.next();
+		
 		final long bogusTimeout = Long.getLong(PROPERTY_KEY + ".timeout.bogus", 100);
-		_selector.selectedKeys().clear();
 		long start = System.currentTimeMillis(), end = start + timeout;
 		while ( timeout>0 ) {
 			int result = _selector.select(timeout);
