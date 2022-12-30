@@ -44,4 +44,5 @@ public interface ScanDataReceiver
 	 */
 	default void close() throws IOException {
 	}
+	
 }

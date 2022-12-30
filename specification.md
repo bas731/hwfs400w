@@ -23,7 +23,7 @@
 
 ## Responses
 
-Are usually less than 16 `<byte>`s (except preview and jpeg data), so a buffer of 16 bytes is enough.
+Are usually less than 32 `<byte>`s (except preview and jpeg data), so a buffer of 32 bytes is enough.
 Known responses map to ascii strings for the first n `<byte>` followed by padding (which can be ignored):
 
 `devbusy`

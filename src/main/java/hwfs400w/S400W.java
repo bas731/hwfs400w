@@ -68,7 +68,7 @@ public class S400W
 	private final S400WSettings _settings;
 	
 	/** Internal receive buffer, default responses should fit in 16 bytes */
-	private final byte[] _buffer = new byte[16];
+	private final byte[] _buffer = new byte[32];
 	
 	/** To check socket for incoming bytes */ 
 	private Selector _selector;
@@ -117,11 +117,11 @@ public class S400W
 		try ( UncheckedCloseable connection = open() ) {
 			sendCommand(POWER_OFF);
 			S400WResponse response = S400WResponse.EMPTY;
-			logResponse("getStatus()", response);
+			logResponse("poweroff()", response);
 			return response;
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "getStatus()", e);
+			log.log(Level.SEVERE, "poweroff()", e);
 			throw e;
 		}
 	}
@@ -184,11 +184,11 @@ public class S400W
 		try ( UncheckedCloseable connection = open() ) {
 			sendCommand(GET_BATTERY_STATE);
 			S400WResponse response = readResponse();
-			logResponse("getStatus()", response);
+			logResponse("getBatteryState()", response);
 			return response;
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "getStatus()", e);
+			log.log(Level.SEVERE, "getBatteryState()", e);
 			throw e;
 		}
 	}
