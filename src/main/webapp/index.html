@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html style="width:100%; height:100%; xoverflow:hidden; margin:0; padding: 0;">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Scan Service</title>
+	</head>
+	<body style="width:98%; height:97%; margin:0; padding: 5px;">
+		<h1>Scan Service</h1>
+		<ul>
+			<li><form target="_blank" action="s400w/scan?dpi=300" method="post"><button type="submit">scan 300 dpi</button></form></li>
+			<li><form target="_blank" action="s400w/scan?dpi=600" method="post"><button type="submit">scan 600 dpi</button></form></li>
+			<li><form target="_s400w" action="s400w/calibrate"    method="post"><button type="submit">calibrate</button></form></li>
+			<li><form target="_s400w" action="s400w/clean"        method="post"><button type="submit">clean</button></form></li>
+			<li><form target="_s400w" action="s400w/poweroff"     method="post"><button type="submit">poweroff</button></form></li>
+			<li><form target="_s400w" action="s400w/status"       method="get"> <button type="submit">status</button></form></li>
+			<li><form target="_s400w" action="s400w/version"       method="get"> <button type="submit">version</button></form></li>
+			<li><form target="_s400w" action="s400w/battery"       method="get"> <button type="submit">battery</button></form></li>
+		</ul>
+
+		<iframe name="_s400w" width="100%" height="50%" border="1px"></iframe>
+	</body>
+</html>
