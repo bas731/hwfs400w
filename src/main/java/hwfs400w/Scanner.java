@@ -5,9 +5,6 @@
 
 package hwfs400w;
 
-import hwfs400w.S400W.Response;
-import hwfs400w.S400W.ScanDataReceiver;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +29,7 @@ public class Scanner
 		Logger.getLogger(Scanner.class.getPackage().getName()).addHandler(h);
 		Logger.getLogger(Scanner.class.getPackage().getName()).setLevel(Level.FINEST);
 		S400W device = new S400W();
-		Response response;
+		S400WResponse response;
 		if ( "version".equals(args[0])  ) {
 			response = device.getVersion();
 			if ( response.isEmpty() || response.isEOF() || response.isKnown() ) System.exit(-1);
@@ -74,20 +71,20 @@ public class Scanner
 
 		else if ( "clean".equals(args[0]) ) {
 			response = device.clean();
-			if ( response!=Response.CLEAN_END ) System.exit(-1);
+			if ( response!=S400WResponse.CLEAN_END ) System.exit(-1);
 			System.out.println(response);
 		}
 
 		else if ( "calibrate".equals(args[0]) ) {
 			response = device.calibrate();
-			if ( response!=Response.CALIBRATE_END ) System.exit(-1);
+			if ( response!=S400WResponse.CALIBRATE_END ) System.exit(-1);
 			System.out.println(response);
 		}
 
 		else if ( "preview".equals(args[0]) ) {
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
 			response = device.scan(0, os::write, null);
-			if ( response!=Response.SCAN_READY ) System.exit(-1);
+			if ( response!=S400WResponse.SCAN_READY ) System.exit(-1);
 			FileOutputStream fos = new FileOutputStream("./" + System.currentTimeMillis() + ".raw");
 			fos.write(os.toByteArray());
 			fos.close();
@@ -112,7 +109,7 @@ public class Scanner
 					o.close();
 				}
 			});
-			if ( response!=Response.SCAN_READY ) System.exit(-1);
+			if ( response!=S400WResponse.SCAN_READY ) System.exit(-1);
 			System.out.println(response);
 		}
 	}
