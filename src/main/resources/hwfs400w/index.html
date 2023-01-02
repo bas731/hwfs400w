@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>S400W Services</title>
+		<style>
+			html {
+				width: 100%; height: 100%; margin: 0; padding: 0;
+			}
+
+			body {
+				width: 100%; height: 100%; margin: 0; padding: 5px;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			h1 {
+				margin:0;
+			}
+
+			ul {
+				list-style-type: square;
+			}
+			li {
+				margin: 2.5px 0;
+			}
+			button, select {
+				color: black;
+				background-color: #eee;
+				border: none;
+				padding: 0px;
+				margin: 0px;
+				cursor: pointer;
+				/*vertical-align: top;*/
+			}
+			button {
+				padding: 0px 4px 1px;
+			}
+
+			iframe {
+				width: 100%; border: 0; border-top: 1px solid black;
+			}
+
+			.flexible {
+				display: flex; flex-direction: column;
+			}
+			.flexible > * {
+				flex: initial;
+			}
+
+			.flexible > *:last-child {
+				flex: auto;
+			}
+		</style>
+		<script>
+			function verify(obj) {
+				return window.confirm("Do you really want to " + obj + "?")
+				&& window.confirm("Are you really sure you want to " + obj + "?");;
+			}
+		</script>
+	</head>
+	<body class="flexible">
+		<h1>S400W Services</h1>
+		<ul>
+			<li><form action="version"   method="get"  target="s400w_out"><button>Version</button></form></li>
+			<li><form action="status"    method="get"  target="s400w_out"><button>Status</button></form></li>
+			<li><form action="battery"   method="get"  target="s400w_out"><button>Battery State</button></form></li>
+			<li><form action="scan"      method="post" target="s400w_scan">
+					<select size="0" name="dpi" required>
+						<option value="300" selected>300 DPI</option>
+						<option value="600">600 DPI</option>
+					</select>
+					<button>Scan</button>
+				</form>
+			</li>
+			<li><form action="calibrate" method="post" target="s400w_out" onsubmit="return verify('re-calibrate the scannner')"><button>Calibrate</button></form></li>
+			<li><form action="clean"     method="post" target="s400w_out" onsubmit="return verify('clean the scanner')">        <button>Clean</button></form></li>
+			<li><form action="poweroff"  method="post" target="s400w_out" onsubmit="return verify('turn off the scanner')">     <button>Power Off</button></form></li>
+		</ul>
+		<iframe name="s400w_out"></iframe>
+	</body>
+</html>

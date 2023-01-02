@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<tomcat-users>
-    <role rolename="scan-user"/>
-
-    <user username="scan" password="scan" roles="scan-user"/>
-</tomcat-users>

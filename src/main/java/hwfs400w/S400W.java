@@ -108,7 +108,7 @@ public class S400W
 	/**
 	 * Turns the scanner off.
 	 * 
-	 * @return response, {@link S400WResponse#EOF}, or {@link S400WResponse#EMPTY} if timeout?
+	 * @return {@link S400WResponse#EOF}
 	 * @throws IOException if IO errors occurred.
 	 * @throws InterruptedIOException if interrupted while sleeping.
 	 */
@@ -116,7 +116,7 @@ public class S400W
 	{
 		try ( UncheckedCloseable connection = open() ) {
 			sendCommand(POWER_OFF);
-			S400WResponse response = S400WResponse.EMPTY;
+			S400WResponse response = S400WResponse.EOF;
 			logResponse("poweroff()", response);
 			return response;
 		}

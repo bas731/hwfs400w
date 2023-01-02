@@ -1,4 +1,0 @@
-<Context>
-    <Realm className="org.apache.catalina.realm.MemoryRealm"
-           pathname="webapps/ROOT/WEB-INF/users.xml" />
-</Context>

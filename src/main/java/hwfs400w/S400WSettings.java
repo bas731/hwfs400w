@@ -15,14 +15,20 @@ import java.time.Duration;
  */
 public class S400WSettings implements Cloneable
 {
+	public final static String DEFAULT_HOST = "192.168.18.33";
+	public final static int    DEFAULT_PORT = 23;
+	
+	public final static String DEFAULT_ADDR = "192.168.18.33:23";
+	
+	
 	/** Prefix for properties, usually &lt;package-name&gt;.&lt;class-name&gt; of {@link S400W} class. */ 
 	private final static String PROPERTY_KEY = S400W.class.getName();
 	
 	/** Scanners host name / address, default is {@literal 192.168.18.33}. */
-	public String host = System.getProperty(PROPERTY_KEY + ".target.host", "192.168.18.33");
+	public String host = System.getProperty(PROPERTY_KEY + ".target.host", DEFAULT_HOST);
 	
 	/** Scanner's port, default is {@literal 23}. */
-	public int port    = Integer.getInteger(PROPERTY_KEY + ".target.port", 23);
+	public int port    = Integer.getInteger(PROPERTY_KEY + ".target.port", DEFAULT_PORT);
 	
 	/** Standard timeout for simple calls that don't start things, default: 10 seconds. */
 	public Duration timeoutStandard = parse("", "10");
@@ -50,11 +56,20 @@ public class S400WSettings implements Cloneable
 	
 	
 	@SuppressWarnings("hiding")
-	S400WSettings with(String host, int port)
+	public S400WSettings with(String hostname, int port) throws IllegalArgumentException
 	{
-		this.host = host;
+		if ( hostname.isEmpty() ) throw new IllegalArgumentException("hostname is empty");
+		if ( port<=0 || port>0xfff ) throw new IllegalArgumentException("port=" + port);
+		this.host = hostname;
 		this.port = port;
 		return this;
+	}
+	
+	
+	public S400WSettings with(String addr) throws NumberFormatException
+	{
+		int idx = addr.lastIndexOf(':');
+		return with(addr.substring(0, idx), Integer.parseInt(addr.substring(idx + 1)));
 	}
 	
 	
